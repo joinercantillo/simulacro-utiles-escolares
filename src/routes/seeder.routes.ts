@@ -1,11 +1,17 @@
 import { Router } from "express";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 import { authenticateToken } from "../middlewares/auth";
 import { runSeeder, seedAllDefault } from "../controllers/seeder.controller";
 
+const uploadsDir = path.join(__dirname, "../../uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const upload = multer({
-  dest: path.join(__dirname, "../../uploads"),
+  dest: uploadsDir,
   fileFilter: (_req, file, cb) => {
     if (file.mimetype === "application/json" || file.originalname.endsWith(".json")) {
       cb(null, true);
