@@ -2,6 +2,13 @@ import { Request, Response } from "express";
 import { Op } from "sequelize";
 import { Clinic, Medication, SupplyRequest, Warehouse } from "../models";
 
+/**
+ * Obtiene todas las clínicas activas del sistema.
+ * GET /api/clinics
+ * @param req Request de Express.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con la lista de clínicas activas.
+ */
 export async function getAllClinics(
   req: Request,
   res: Response
@@ -14,6 +21,13 @@ export async function getAllClinics(
   }
 }
 
+/**
+ * Obtiene una clínica por su ID, incluyendo sus solicitudes de insumo.
+ * GET /api/clinics/:id
+ * @param req Request de Express con params: { id }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con la clínica encontrada o 404 si no existe.
+ */
 export async function getClinicById(
   req: Request,
   res: Response
@@ -44,6 +58,13 @@ export async function getClinicById(
   }
 }
 
+/**
+ * Crea una nueva clínica en el sistema.
+ * POST /api/clinics
+ * @param req Request de Express con body: { name, nit, address, phone, responsibleName, responsibleEmail }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con la clínica creada o un mensaje de error si el NIT ya existe.
+ */
 export async function createClinic(
   req: Request,
   res: Response
@@ -71,6 +92,13 @@ export async function createClinic(
   }
 }
 
+/**
+ * Actualiza los datos de una clínica existente.
+ * PUT /api/clinics/:id
+ * @param req Request de Express con params: { id } y body con los campos a actualizar.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con la clínica actualizada o 404 si no existe.
+ */
 export async function updateClinic(
   req: Request,
   res: Response
@@ -98,6 +126,13 @@ export async function updateClinic(
   }
 }
 
+/**
+ * Elimina lógicamente una clínica (soft delete).
+ * DELETE /api/clinics/:id
+ * @param req Request de Express con params: { id }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con mensaje de confirmación o 404 si no existe.
+ */
 export async function deleteClinic(
   req: Request,
   res: Response

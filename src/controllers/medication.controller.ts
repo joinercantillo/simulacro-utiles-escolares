@@ -1,6 +1,13 @@
 import { Request, Response } from "express";
 import { Medication } from "../models";
 
+/**
+ * Obtiene todos los medicamentos activos del sistema.
+ * GET /api/medications
+ * @param req Request de Express.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con la lista de medicamentos activos.
+ */
 export async function getAllMedications(
   req: Request,
   res: Response
@@ -13,6 +20,13 @@ export async function getAllMedications(
   }
 }
 
+/**
+ * Obtiene un medicamento por su ID.
+ * GET /api/medications/:id
+ * @param req Request de Express con params: { id }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con el medicamento encontrado o 404 si no existe.
+ */
 export async function getMedicationById(
   req: Request,
   res: Response
@@ -33,6 +47,13 @@ export async function getMedicationById(
   }
 }
 
+/**
+ * Crea un nuevo medicamento en el sistema.
+ * POST /api/medications
+ * @param req Request de Express con body: { name, description, category, unit? }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con el medicamento creado o un mensaje de error si el nombre ya existe.
+ */
 export async function createMedication(
   req: Request,
   res: Response
@@ -58,6 +79,13 @@ export async function createMedication(
   }
 }
 
+/**
+ * Actualiza los datos de un medicamento existente.
+ * PUT /api/medications/:id
+ * @param req Request de Express con params: { id } y body con los campos a actualizar.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con el medicamento actualizado o 404 si no existe.
+ */
 export async function updateMedication(
   req: Request,
   res: Response
@@ -77,6 +105,13 @@ export async function updateMedication(
   }
 }
 
+/**
+ * Elimina lógicamente un medicamento (soft delete).
+ * DELETE /api/medications/:id
+ * @param req Request de Express con params: { id }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con mensaje de confirmación o 404 si no existe.
+ */
 export async function deleteMedication(
   req: Request,
   res: Response

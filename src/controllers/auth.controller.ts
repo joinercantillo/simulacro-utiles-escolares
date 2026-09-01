@@ -4,6 +4,13 @@ import jwt from "jsonwebtoken";
 import User from "../models/User";
 import { JwtPayload, UserRole } from "../interfaces";
 
+/**
+ * Registra un nuevo usuario en el sistema.
+ * Crea un usuario con la contraseña encriptada y retorna los datos del usuario creado.
+ * @param req Request de Express con body: { name, email, password, role }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con el usuario creado o un mensaje de error.
+ */
 export async function register(
   req: Request,
   res: Response
@@ -39,6 +46,13 @@ export async function register(
   }
 }
 
+/**
+ * Inicia sesión de un usuario existente.
+ * Valida las credenciales y retorna un token JWT para autenticación.
+ * @param req Request de Express con body: { email, password }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con el token JWT y los datos del usuario, o un mensaje de error.
+ */
 export async function login(req: Request, res: Response): Promise<Response> {
   try {
     const { email, password } = req.body;

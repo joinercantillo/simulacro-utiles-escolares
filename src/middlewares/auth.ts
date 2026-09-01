@@ -6,6 +6,14 @@ export interface AuthRequest extends Request {
   user?: JwtPayload;
 }
 
+/**
+ * Middleware que autentica el token JWT enviado en el header Authorization.
+ * Verifica que el token sea válido y decodifica los datos del usuario en req.user.
+ * @param req Request de Express con header Authorization tipo Bearer.
+ * @param res Response de Express.
+ * @param next Función que continúa al siguiente middleware si la autenticación es exitosa.
+ * @returns No retorna valor; envía 401 si el token falta o es inválido.
+ */
 export function authenticateToken(
   req: AuthRequest,
   res: Response,
@@ -36,6 +44,11 @@ export function authenticateToken(
   }
 }
 
+/**
+ * Middleware que verifica que el usuario autenticado tenga uno de los roles permitidos.
+ * @param roles Roles de usuario permitidos para la ruta.
+ * @returns Middleware que valida el rol del usuario y llama a next() o envía 401/403.
+ */
 export function authorizeRoles(...roles: string[]) {
   return (req: AuthRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {

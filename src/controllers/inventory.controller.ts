@@ -1,6 +1,13 @@
 import { Request, Response } from "express";
 import { Inventory, Medication, Warehouse } from "../models";
 
+/**
+ * Obtiene el inventario de un almacén específico, incluyendo información del medicamento.
+ * GET /api/inventory/warehouse/:warehouseId
+ * @param req Request de Express con params: { warehouseId }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con la lista de registros de inventario del almacén.
+ */
 export async function getInventoryByWarehouse(
   req: Request,
   res: Response
@@ -17,6 +24,14 @@ export async function getInventoryByWarehouse(
   }
 }
 
+/**
+ * Agrega medicamento al inventario de un almacén.
+ * Si ya existe un registro para el mismo almacén y medicamento, incrementa la cantidad.
+ * POST /api/inventory
+ * @param req Request de Express con body: { warehouseId, medicationId, quantity }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con el registro de inventario creado o actualizado.
+ */
 export async function addInventory(
   req: Request,
   res: Response
@@ -60,6 +75,13 @@ export async function addInventory(
   }
 }
 
+/**
+ * Actualiza la cantidad de un registro de inventario existente.
+ * PUT /api/inventory/:id
+ * @param req Request de Express con params: { id } y body: { quantity }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con el registro de inventario actualizado o 404 si no existe.
+ */
 export async function updateInventory(
   req: Request,
   res: Response

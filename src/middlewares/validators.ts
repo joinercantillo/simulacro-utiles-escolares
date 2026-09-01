@@ -1,5 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 
+/**
+ * Middleware que valida los campos de registro de un usuario.
+ * Verifica que name, email, password y role sean obligatorios y tengan formatos válidos.
+ * @param req Request de Express con body: { name, email, password, role }.
+ * @param res Response de Express.
+ * @param next Función que continúa al siguiente middleware si la validación es exitosa.
+ * @returns No retorna valor; envía 400 si la validación falla.
+ */
 export function validateRegister(
   req: Request,
   res: Response,
@@ -43,6 +51,14 @@ export function validateRegister(
   next();
 }
 
+/**
+ * Middleware que valida los campos de inicio de sesión.
+ * Verifica que el email y la contraseña estén presentes.
+ * @param req Request de Express con body: { email, password }.
+ * @param res Response de Express.
+ * @param next Función que continúa al siguiente middleware si la validación es exitosa.
+ * @returns No retorna valor; envía 400 si faltan campos.
+ */
 export function validateLogin(
   req: Request,
   res: Response,

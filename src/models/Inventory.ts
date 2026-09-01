@@ -3,6 +3,9 @@ import sequelize from "../config/database";
 import Warehouse from "./Warehouse";
 import Medication from "./Medication";
 
+/**
+ * Modelo Sequelize que representa la tabla de inventario, relacionando almacenes con medicamentos.
+ */
 class Inventory extends Model {
   public id!: number;
   public warehouseId!: number;
@@ -12,6 +15,9 @@ class Inventory extends Model {
   public readonly updatedAt!: Date;
 }
 
+/**
+ * Inicializa el modelo Inventory definiendo sus atributos y configuración de la tabla "inventories".
+ */
 Inventory.init(
   {
     id: {

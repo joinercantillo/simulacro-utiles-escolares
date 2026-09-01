@@ -10,6 +10,14 @@ import { RequestStatus } from "../interfaces";
 
 const VALID_STATUSES = Object.values(RequestStatus);
 
+/**
+ * Crea una solicitud de insumo validando la existencia de clínica, medicamento y almacén, y el inventario disponible.
+ * Al crearse, descuenta la cantidad solicitada del inventario del almacén.
+ * POST /api/supply-requests
+ * @param req Request de Express con body: { clinicId, medicationId, warehouseId, quantityRequested, notes?, status? }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con la solicitud creada o un mensaje de error de validación.
+ */
 export async function createSupplyRequest(
   req: Request,
   res: Response
@@ -69,6 +77,13 @@ export async function createSupplyRequest(
   }
 }
 
+/**
+ * Obtiene todas las solicitudes de insumo activas con sus relaciones.
+ * GET /api/supply-requests
+ * @param req Request de Express.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con la lista de solicitudes de insumo.
+ */
 export async function getAllSupplyRequests(
   req: Request,
   res: Response
@@ -89,6 +104,12 @@ export async function getAllSupplyRequests(
   }
 }
 
+/**
+ * Obtiene las solicitudes de insumo activas con estado pendiente, en proceso o aprobada.
+ * @param req Request de Express.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con la lista de solicitudes activas.
+ */
 export async function getActiveSupplyRequests(
   req: Request,
   res: Response
@@ -112,6 +133,13 @@ export async function getActiveSupplyRequests(
   }
 }
 
+/**
+ * Obtiene el historial de solicitudes de insumo de una clínica específica.
+ * GET /api/supply-requests/clinic/:clinicId
+ * @param req Request de Express con params: { clinicId }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con la clínica y su lista de solicitudes de insumo.
+ */
 export async function getRequestsByClinic(
   req: Request,
   res: Response
@@ -142,6 +170,13 @@ export async function getRequestsByClinic(
   }
 }
 
+/**
+ * Actualiza el estado de una solicitud de insumo existente.
+ * PUT /api/supply-requests/:id/status
+ * @param req Request de Express con params: { id } y body: { status }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con la solicitud actualizada o un mensaje de error de validación.
+ */
 export async function updateRequestStatus(
   req: Request,
   res: Response
@@ -169,6 +204,13 @@ export async function updateRequestStatus(
   }
 }
 
+/**
+ * Elimina lógicamente una solicitud de insumo (soft delete).
+ * DELETE /api/supply-requests/:id
+ * @param req Request de Express con params: { id }.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con mensaje de confirmación o 404 si no existe.
+ */
 export async function deleteSupplyRequest(
   req: Request,
   res: Response
