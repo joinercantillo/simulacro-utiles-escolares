@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Op } from "sequelize";
-import { Clinic, Inventory, Medication, SupplyRequest, Warehouse } from "../models";
+import { Clinic, Medication, SupplyRequest, Warehouse } from "../models";
 
 export async function getAllClinics(
   req: Request,
