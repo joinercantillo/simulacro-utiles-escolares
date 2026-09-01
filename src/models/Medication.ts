@@ -1,6 +1,9 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
+/**
+ * Modelo Sequelize que representa la tabla de medicamentos del sistema.
+ */
 class Medication extends Model {
   public id!: number;
   public name!: string;
@@ -12,6 +15,9 @@ class Medication extends Model {
   public readonly updatedAt!: Date;
 }
 
+/**
+ * Inicializa el modelo Medication definiendo sus atributos y configuración de la tabla "medications".
+ */
 Medication.init(
   {
     id: {

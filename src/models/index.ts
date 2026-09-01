@@ -19,4 +19,8 @@ Inventory.belongsTo(Warehouse, { foreignKey: "warehouseId", as: "warehouse" });
 Medication.hasMany(Inventory, { foreignKey: "medicationId", as: "inventories" });
 Inventory.belongsTo(Medication, { foreignKey: "medicationId", as: "medication" });
 
+/**
+ * Exporta todos los modelos y define las relaciones entre ellos.
+ * @returns Referencias a los modelos Clinic, SupplyRequest, Warehouse, Medication e Inventory.
+ */
 export { Clinic, SupplyRequest, Warehouse, Medication, Inventory };

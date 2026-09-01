@@ -1,8 +1,14 @@
+/**
+ * Enum con los roles de usuario disponibles en el sistema.
+ */
 export enum UserRole {
   ADMIN = "admin",
   GESTOR = "gestor",
 }
 
+/**
+ * Enum con los estados posibles de una solicitud de insumo.
+ */
 export enum RequestStatus {
   PENDIENTE = "pendiente",
   EN_PROCESO = "en_proceso",
@@ -11,6 +17,9 @@ export enum RequestStatus {
   COMPLETADA = "completada",
 }
 
+/**
+ * Interfaz que representa los datos de un usuario del sistema.
+ */
 export interface IUser {
   id?: number;
   name: string;
@@ -22,6 +31,9 @@ export interface IUser {
   updatedAt?: Date;
 }
 
+/**
+ * Interfaz que representa los datos de una clínica.
+ */
 export interface IClinic {
   id?: number;
   name: string;
@@ -35,6 +47,9 @@ export interface IClinic {
   updatedAt?: Date;
 }
 
+/**
+ * Interfaz que representa los datos de un almacén.
+ */
 export interface IWarehouse {
   id?: number;
   name: string;
@@ -46,6 +61,9 @@ export interface IWarehouse {
   updatedAt?: Date;
 }
 
+/**
+ * Interfaz que representa los datos de un medicamento.
+ */
 export interface IMedication {
   id?: number;
   name: string;
@@ -57,6 +75,9 @@ export interface IMedication {
   updatedAt?: Date;
 }
 
+/**
+ * Interfaz que representa un registro de inventario de un medicamento en un almacén.
+ */
 export interface IInventory {
   id?: number;
   warehouseId: number;
@@ -66,6 +87,9 @@ export interface IInventory {
   updatedAt?: Date;
 }
 
+/**
+ * Interfaz que representa una solicitud de insumo de una clínica a un almacén.
+ */
 export interface ISupplyRequest {
   id?: number;
   clinicId: number;
@@ -79,6 +103,9 @@ export interface ISupplyRequest {
   updatedAt?: Date;
 }
 
+/**
+ * Interfaz que representa los datos decodificados de un token JWT.
+ */
 export interface JwtPayload {
   id: number;
   email: string;

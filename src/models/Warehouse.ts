@@ -1,6 +1,9 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
+/**
+ * Modelo Sequelize que representa la tabla de almacenes del sistema.
+ */
 class Warehouse extends Model {
   public id!: number;
   public name!: string;
@@ -12,6 +15,9 @@ class Warehouse extends Model {
   public readonly updatedAt!: Date;
 }
 
+/**
+ * Inicializa el modelo Warehouse definiendo sus atributos y configuración de la tabla "warehouses".
+ */
 Warehouse.init(
   {
     id: {

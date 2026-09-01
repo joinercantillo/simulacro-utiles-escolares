@@ -7,6 +7,11 @@ import User from "../models/User";
 
 dotenv.config();
 
+/**
+ * Ejecuta la carga de datos base en la base de datos, sincronizando los modelos y creando los registros iniciales.
+ * @returns Promesa que se resuelve al terminar de insertar los datos.
+ * @throws Si falla la conexión o la inserción, termina el proceso con código de error.
+ */
 async function seed(): Promise<void> {
   try {
     await sequelize.authenticate();

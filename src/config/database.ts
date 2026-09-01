@@ -3,6 +3,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+/**
+ * Instancia de Sequelize configurada para conectar con la base de datos PostgreSQL.
+ * Utiliza las variables de entorno DB_NAME, DB_USER, DB_PASSWORD, DB_HOST y DB_PORT.
+ */
 const sequelize = new Sequelize(
   process.env.DB_NAME || "riwimed_care_plus",
   process.env.DB_USER || "postgres",
