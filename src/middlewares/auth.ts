@@ -29,7 +29,7 @@ export function authenticateToken(
     ) as JwtPayload;
     req.user = decoded;
     next();
-  } catch (error) {
+  } catch {
     res.status(401).json({
       message: "Token inválido o expirado",
     });
