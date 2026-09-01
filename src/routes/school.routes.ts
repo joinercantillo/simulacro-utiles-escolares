@@ -1,11 +1,11 @@
 import { Router } from "express";
 import {
-  createClinic,
-  deleteClinic,
-  getAllClinics,
-  getClinicById,
-  updateClinic,
-} from "../controllers/clinic.controller";
+  createSchool,
+  deleteSchool,
+  getAllSchools,
+  getSchoolById,
+  updateSchool,
+} from "../controllers/school.controller";
 import { authenticateToken, authorizeRoles } from "../middlewares/auth";
 
 const router = Router();
@@ -14,28 +14,28 @@ router.use(authenticateToken);
 
 /** @swagger
  * tags:
- *   name: Clínicas
- *   description: Gestión de clínicas y centros de atención
+ *   name: Instituciones
+ *   description: Gestión de instituciones educativas
  */
 
 /**
  * @swagger
- * /api/clinics:
+ * /api/schools:
  *   get:
- *     summary: Obtener todas las clínicas
- *     tags: [Clínicas]
+ *     summary: Obtener todas las instituciones
+ *     tags: [Instituciones]
  *     security: [{ bearerAuth: [] }]
  *     responses:
- *       200: { description: Lista de clínicas }
+ *       200: { description: Lista de instituciones }
  */
-router.get("/", getAllClinics);
+router.get("/", getAllSchools);
 
 /**
  * @swagger
- * /api/clinics/{id}:
+ * /api/schools/{id}:
  *   get:
- *     summary: Obtener clínica por ID con su historial de solicitudes
- *     tags: [Clínicas]
+ *     summary: Obtener institución por ID con su historial de solicitudes
+ *     tags: [Instituciones]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -43,17 +43,17 @@ router.get("/", getAllClinics);
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Clínica encontrada }
- *       404: { description: Clínica no encontrada }
+ *       200: { description: Institución encontrada }
+ *       404: { description: Institución no encontrada }
  */
-router.get("/:id", getClinicById);
+router.get("/:id", getSchoolById);
 
 /**
  * @swagger
- * /api/clinics:
+ * /api/schools:
  *   post:
- *     summary: Crear una clínica (solo admin)
- *     tags: [Clínicas]
+ *     summary: Crear una institución (solo admin)
+ *     tags: [Instituciones]
  *     security: [{ bearerAuth: [] }]
  *     requestBody:
  *       required: true
@@ -63,24 +63,24 @@ router.get("/:id", getClinicById);
  *             type: object
  *             required: [name, nit, address, phone, responsibleName, responsibleEmail]
  *             properties:
- *               name: { type: string, example: "Clínica Vida Sana" }
+ *               name: { type: string, example: "Colegio La Esperanza" }
  *               nit: { type: string, example: "900123456-1" }
  *               address: { type: string, example: "Calle 10 # 20-30" }
  *               phone: { type: string, example: "3001234567" }
  *               responsibleName: { type: string, example: "María López" }
- *               responsibleEmail: { type: string, example: "maria@vidasana.co" }
+ *               responsibleEmail: { type: string, example: "maria.lopez@esperanza.co" }
  *     responses:
- *       201: { description: Clínica creada }
+ *       201: { description: Institución creada }
  *       409: { description: NIT duplicado }
  */
-router.post("/", authorizeRoles("admin"), createClinic);
+router.post("/", authorizeRoles("admin"), createSchool);
 
 /**
  * @swagger
- * /api/clinics/{id}:
+ * /api/schools/{id}:
  *   put:
- *     summary: Actualizar una clínica (solo admin)
- *     tags: [Clínicas]
+ *     summary: Actualizar una institución (solo admin)
+ *     tags: [Instituciones]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -88,17 +88,17 @@ router.post("/", authorizeRoles("admin"), createClinic);
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Clínica actualizada }
- *       404: { description: Clínica no encontrada }
+ *       200: { description: Institución actualizada }
+ *       404: { description: Institución no encontrada }
  */
-router.put("/:id", authorizeRoles("admin"), updateClinic);
+router.put("/:id", authorizeRoles("admin"), updateSchool);
 
 /**
  * @swagger
- * /api/clinics/{id}:
+ * /api/schools/{id}:
  *   delete:
- *     summary: Eliminar clínica (baja lógica, solo admin)
- *     tags: [Clínicas]
+ *     summary: Eliminar institución (baja lógica, solo admin)
+ *     tags: [Instituciones]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -106,9 +106,9 @@ router.put("/:id", authorizeRoles("admin"), updateClinic);
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Clínica eliminada }
- *       404: { description: Clínica no encontrada }
+ *       200: { description: Institución eliminada }
+ *       404: { description: Institución no encontrada }
  */
-router.delete("/:id", authorizeRoles("admin"), deleteClinic);
+router.delete("/:id", authorizeRoles("admin"), deleteSchool);
 
 export default router;

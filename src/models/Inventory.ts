@@ -1,15 +1,15 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 import Warehouse from "./Warehouse";
-import Medication from "./Medication";
+import SchoolSupply from "./SchoolSupply";
 
 /**
- * Modelo Sequelize que representa la tabla de inventario, relacionando almacenes con medicamentos.
+ * Modelo Sequelize que representa la tabla de inventario, relacionando almacenes con suministros escolares.
  */
 class Inventory extends Model {
   public id!: number;
   public warehouseId!: number;
-  public medicationId!: number;
+  public schoolSupplyId!: number;
   public quantity!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -33,11 +33,11 @@ Inventory.init(
         key: "id",
       },
     },
-    medicationId: {
+    schoolSupplyId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Medication,
+        model: SchoolSupply,
         key: "id",
       },
     },

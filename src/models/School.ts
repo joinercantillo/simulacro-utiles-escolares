@@ -2,9 +2,9 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 /**
- * Modelo Sequelize que representa la tabla de clínicas del sistema.
+ * Modelo Sequelize que representa la tabla de instituciones del sistema.
  */
-class Clinic extends Model {
+class School extends Model {
   public id!: number;
   public name!: string;
   public nit!: string;
@@ -18,9 +18,9 @@ class Clinic extends Model {
 }
 
 /**
- * Inicializa el modelo Clinic definiendo sus atributos y configuración de la tabla "clinics".
+ * Inicializa el modelo School definiendo sus atributos y configuración de la tabla "schools".
  */
-Clinic.init(
+School.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -63,9 +63,9 @@ Clinic.init(
   },
   {
     sequelize,
-    modelName: "Clinic",
-    tableName: "clinics",
+    modelName: "School",
+    tableName: "schools",
   }
 );
 
-export default Clinic;
+export default School;

@@ -1,16 +1,25 @@
-# RiwiMediCare Plus API
+# RiwiSchool Plus API – Distribución de Útiles Escolares
 
-API REST para la gestión de solicitudes de abastecimiento de medicamentos e insumos médicos.
-Sistema que permite administrar clínicas, responsables, almacenes, medicamentos, inventario y el
+API REST para la gestión de solicitudes de abastecimiento de **útiles escolares**.
+El sistema permite que las **instituciones educativas (colegios)** soliciten útiles escolares
+(cuadernos, lápices, colores, resmas de papel, morrales) a las **bodegas** encargadas de su
+almacenamiento y despacho, administrando responsables, inventario, stock y el
 ciclo de vida completo de las solicitudes de abastecimiento.
 
 ## Nombre del Coder
 
-**Johana Duque** (actualiza con tu nombre y vérificalo antes de entregar)
+**Johana Duque** (actualiza con tu nombre y verifícalo antes de entregar)
 
 ## Clan
 
 **Clan:** Node.js – Ruta de entrenamiento (actualiza con tu clan antes de entregar)
+
+## Contexto del proyecto
+
+> Un colegio necesita reabastecerse de útiles escolares para el inicio del año lectivo.
+> Su rectora inicia sesión en RiwiSchool Plus, consulta el catálogo de suministros escolares,
+> verifica la disponibilidad de stock en la bodega y crea una solicitud de útiles.
+> Un gestor de la bodega recibe la solicitud, la aprueba y coordina el despacho.
 
 ## Tecnologías utilizadas
 
@@ -38,8 +47,8 @@ ciclo de vida completo de las solicitudes de abastecimiento.
 1. Clonar el repositorio:
 
 ```bash
-git clone https://github.com/tu-usuario/riwimed-care-plus.git
-cd riwimed-care-plus
+git clone https://github.com/joinercantillo/simulacro-utiles-escolares.git
+cd simulacro-utiles-escolares
 ```
 
 2. Instalar las dependencias:
@@ -57,13 +66,13 @@ cp .env.example .env
 4. Crear la base de datos en PostgreSQL (si no existe):
 
 ```sql
-CREATE DATABASE riwimed_care_plus;
+CREATE DATABASE riwischool_plus;
 ```
 
 5. (Opcional) Restaurar el backup incluido en la entrega:
 
 ```bash
-psql -U postgres -d riwimed_care_plus -f backup-database.sql
+psql -U postgres -d riwischool_plus -f backup-database.sql
 ```
 
 ## Ejemplo de variables de entorno (`.env`)
@@ -72,10 +81,10 @@ psql -U postgres -d riwimed_care_plus -f backup-database.sql
 PORT=3000
 DB_HOST=localhost
 DB_PORT=5432
-DB_NAME=riwimed_care_plus
+DB_NAME=riwischool_plus
 DB_USER=postgres
 DB_PASSWORD=postgres
-JWT_SECRET=riwimed_secret_key_2024
+JWT_SECRET=riwischool_secret_key_2024
 JWT_EXPIRES_IN=24h
 ```
 
@@ -111,7 +120,7 @@ Al ejecutarse, el servidor quedará disponible en:
 
 La API expone un endpoint que recibe un archivo JSON para poblar la base de datos
 como seeder. El archivo debe ser un arreglo de entidades identificadas con la
-propiedad `__type` (`user`, `clinic`, `warehouse`, `medication`, `inventory`, `request`).
+propiedad `__type` (`user`, `school`, `warehouse`, `schoolSupply`, `inventory`, `request`).
 
 ```bash
 curl -X POST http://localhost:3000/api/seeders/upload \
@@ -119,12 +128,13 @@ curl -X POST http://localhost:3000/api/seeders/upload \
   -F "file=@seed-data/users.json"
 ```
 
-En la carpeta `seed-data/` encontrarás archivos de ejemplo:
+En la carpeta `seed-data/` encontrarás archivos de ejemplo con temática escolar
+(colegios, bodegas y útiles como cuadernos, lápices y colores):
 
 ```bash
-curl -X POST http://localhost:3000/api/seeders/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/clinics.json"
+curl -X POST http://localhost:3000/api/seeders/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/schools.json"
 curl -X POST http://localhost:3000/api/seeders/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/warehouses.json"
-curl -X POST http://localhost:3000/api/seeders/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/medications.json"
+curl -X POST http://localhost:3000/api/seeders/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/school-supplies.json"
 curl -X POST http://localhost:3000/api/seeders/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/inventory.json"
 ```
 
@@ -134,8 +144,9 @@ curl -X POST http://localhost:3000/api/seeders/upload -H "Authorization: Bearer 
 npm run seed
 ```
 
-Este script sincroniza la base de datos y carga usuarios, clínicas, almacenes,
-medicamentos, inventario inicial y un par de solicitudes de ejemplo.
+Este script sincroniza la base de datos y carga usuarios, instituciones educativas,
+bodegas, suministros escolares (útiles), inventario inicial y un par de solicitudes
+de ejemplo.
 
 ### Forma 3: Endpoint de datos por defecto
 
@@ -147,59 +158,59 @@ curl -X POST http://localhost:3000/api/seeders/default -H "Authorization: Bearer
 
 | Rol    | Email               | Contraseña |
 | ------ | ------------------- | ---------- |
-| admin  | admin@riwimed.co    | admin123   |
-| gestor | gestor@riwimed.co   | gestor123  |
+| admin  | admin@riwischool.co | admin123   |
+| gestor | gestor@riwischool.co | gestor123  |
 
 ## Endpoints principales
 
-| Método | Ruta                        | Descripción                              | Rol     |
-| ------ | --------------------------- | ---------------------------------------- | ------- |
-| POST   | `/api/auth/register`        | Registrar usuario (admin/gestor)         | Público |
-| POST   | `/api/auth/login`           | Iniciar sesión (JWT)                     | Público |
-| GET    | `/api/clinics`              | Listar clínicas                          | Token   |
-| GET    | `/api/clinics/:id`          | Clínica con historial de solicitudes     | Token   |
-| POST   | `/api/clinics`              | Crear clínica                            | admin   |
-| PUT    | `/api/clinics/:id`          | Actualizar clínica                       | admin   |
-| DELETE | `/api/clinics/:id`          | Eliminar clínica (lógica)                | admin   |
-| GET    | `/api/warehouses`           | Listar almacenes                         | Token   |
-| GET    | `/api/warehouses/:id`       | Almacén con inventario                   | Token   |
-| POST   | `/api/warehouses`           | Crear almacén                            | admin   |
-| PUT    | `/api/warehouses/:id`       | Actualizar almacén                       | admin   |
-| DELETE | `/api/warehouses/:id`       | Eliminar almacén (lógica)                | admin   |
-| GET    | `/api/medications`          | Listar medicamentos                      | Token   |
-| GET    | `/api/medications/:id`      | Medicamento por ID                       | Token   |
-| POST   | `/api/medications`          | Crear medicamento                        | admin   |
-| PUT    | `/api/medications/:id`      | Actualizar medicamento                   | admin   |
-| DELETE | `/api/medications/:id`      | Eliminar medicamento (lógica)            | admin   |
-| POST   | `/api/requests`             | Crear solicitud de abastecimiento        | Token   |
-| GET    | `/api/requests/active`      | Solicitudes activas                      | Token   |
-| GET    | `/api/requests/all`         | Historial completo de solicitudes        | Token   |
-| GET    | `/api/requests/clinic/:id`  | Historial por clínica                    | Token   |
-| PATCH  | `/api/requests/:id/status`  | Actualizar estado de una solicitud       | Token   |
-| DELETE | `/api/requests/:id`         | Eliminar solicitud (lógica)              | admin   |
-| GET    | `/api/inventory/warehouse/:id` | Inventario de un almacén               | Token   |
-| POST   | `/api/inventory`            | Agregar stock (admin)                    | admin   |
-| PUT    | `/api/inventory/:id`        | Actualizar cantidad de inventario        | admin   |
-| POST   | `/api/seeders/upload`       | Cargar seeders desde archivo JSON        | Token   |
-| POST   | `/api/seeders/default`      | Cargar datos base por defecto            | Token   |
+| Método | Ruta                             | Descripción                              | Rol     |
+| ------ | -------------------------------- | ---------------------------------------- | ------- |
+| POST   | `/api/auth/register`             | Registrar usuario (admin/gestor)         | Público |
+| POST   | `/api/auth/login`                | Iniciar sesión (JWT)                     | Público |
+| GET    | `/api/schools`                   | Listar instituciones educativas          | Token   |
+| GET    | `/api/schools/:id`               | Institución con historial de solicitudes | Token   |
+| POST   | `/api/schools`                   | Crear institución educativa              | admin   |
+| PUT    | `/api/schools/:id`               | Actualizar institución educativa         | admin   |
+| DELETE | `/api/schools/:id`               | Eliminar institución (lógica)            | admin   |
+| GET    | `/api/warehouses`                | Listar bodegas                           | Token   |
+| GET    | `/api/warehouses/:id`            | Bodega con su inventario de útiles       | Token   |
+| POST   | `/api/warehouses`                | Crear bodega                             | admin   |
+| PUT    | `/api/warehouses/:id`            | Actualizar bodega                        | admin   |
+| DELETE | `/api/warehouses/:id`            | Eliminar bodega (lógica)                 | admin   |
+| GET    | `/api/school-supplies`           | Listar útiles escolares                  | Token   |
+| GET    | `/api/school-supplies/:id`       | Útil escolar por ID                      | Token   |
+| POST   | `/api/school-supplies`           | Crear útil escolar                       | admin   |
+| PUT    | `/api/school-supplies/:id`       | Actualizar útil escolar                  | admin   |
+| DELETE | `/api/school-supplies/:id`       | Eliminar útil escolar (lógica)           | admin   |
+| POST   | `/api/requests`                  | Crear solicitud de útiles escolares      | Token   |
+| GET    | `/api/requests/active`           | Solicitudes activas                      | Token   |
+| GET    | `/api/requests/all`              | Historial completo de solicitudes        | Token   |
+| GET    | `/api/requests/school/:id`       | Historial por institución                | Token   |
+| PATCH  | `/api/requests/:id/status`       | Actualizar estado de una solicitud       | Token   |
+| DELETE | `/api/requests/:id`              | Eliminar solicitud (lógica)              | admin   |
+| GET    | `/api/inventory/warehouse/:id`   | Inventario de una bodega                 | Token   |
+| POST   | `/api/inventory`                 | Agregar stock de útiles (admin)          | admin   |
+| PUT    | `/api/inventory/:id`             | Actualizar cantidad de inventario        | admin   |
+| POST   | `/api/seeders/upload`            | Cargar seeders desde archivo JSON        | Token   |
+| POST   | `/api/seeders/default`           | Cargar datos base por defecto            | Token   |
 
 ## Estados de una solicitud
 
-| Estado       | Descripción                       |
-| ------------ | --------------------------------- |
-| pendiente    | Solicitud creada, en espera       |
-| en_proceso   | Solicitud en gestión de almacén   |
-| aprobada     | Solicitud aprobada                |
-| rechazada    | Solicitud rechazada               |
-| completada   | Solicitud surtida y finalizada    |
+| Estado       | Descripción                            |
+| ------------ | -------------------------------------- |
+| pendiente    | Solicitud creada, en espera de revisión |
+| en_proceso   | Solicitud en gestión de la bodega       |
+| aprobada     | Solicitud aprobada                      |
+| rechazada    | Solicitud rechazada                     |
+| completada   | Solicitud surtida y finalizada          |
 
 ## Validaciones implementadas
 
-- Existencia de la clínica, el medicamento y el almacén antes de crear una solicitud.
-- Disponibilidad suficiente del inventario en el almacén asignado.
+- Existencia de la institución educativa, el útil escolar y la bodega antes de crear una solicitud.
+- Disponibilidad suficiente del stock de útiles en la bodega asignada.
 - Cantidad solicitada debe ser un entero mayor a cero.
 - Estados de solicitud restringidos al catálogo definido.
-- No se permiten clínicas duplicadas por NIT.
+- No se permiten instituciones educativas duplicadas por NIT.
 - Eliminación lógica mediante el campo `isActive`.
 
 ## Pruebas unitarias
@@ -209,7 +220,7 @@ npm test -- --coverage
 ```
 
 Cobertura obtenida en las funcionalidades críticas (creación de solicitudes,
-consulta de clínica y responsable, cambio de estados y middlewares de autenticación):
+consulta de institución y responsable, cambio de estados y middlewares de autenticación):
 **100%** en las entidades evaluadas.
 
 ## Docker (punto extra)
@@ -222,10 +233,10 @@ docker-compose up --build
 
 Esto levanta:
 
-- Contenedor `riwimed-api` (aplicación en el puerto 3000).
-- Contenedor `riwimed-db` (PostgreSQL en el puerto 5432).
+- Contenedor `riwischool-api` (aplicación en el puerto 3000).
+- Contenedor `riwischool-db` (PostgreSQL en el puerto 5432).
 - Volumen `pgdata` para persistencia de datos.
-- Red interna `riwimed-network` entre ambos servicios.
+- Red interna `riwischool-network` entre ambos servicios.
 
 Para detener:
 
@@ -241,7 +252,7 @@ El repositorio sigue la estrategia Gitflow con Conventional Commits:
 main
 └── develop
     ├── feature/authentication
-    ├── feature/clinic-crud
+    ├── feature/school-crud
     ├── feature/warehouse-inventory
     ├── feature/supply-requests
     ├── feature/seeders-upload
@@ -260,9 +271,7 @@ chore: configurar Docker y docker-compose
 
 ## URL del repositorio (GitHub)
 
-**Pendiente de crear.**
-Crea un repositorio público en GitHub y sube el proyecto siguiendo la estrategia de ramas.
-Ejemplo: `https://github.com/tu-usuario/riwimed-care-plus`
+**https://github.com/joinercantillo/simulacro-utiles-escolares**
 
 ## Estructura del proyecto
 

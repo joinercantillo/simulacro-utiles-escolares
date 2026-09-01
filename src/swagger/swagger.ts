@@ -4,11 +4,11 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "RiwiMediCare Plus API",
+      title: "RiwiSchool Plus API",
       version: "1.0.0",
       description:
-        "API REST para la gestión de solicitudes de abastecimiento de medicamentos. " +
-        "Permite administrar clínicas, responsables, almacenes, inventario y el ciclo de vida " +
+        "API REST para la gestión de solicitudes de abastecimiento de suministros escolares. " +
+        "Permite administrar instituciones, responsables, almacenes, inventario y el ciclo de vida " +
         "de las solicitudes de abastecimiento.",
     },
     servers: [

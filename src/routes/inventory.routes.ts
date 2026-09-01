@@ -46,10 +46,10 @@ router.get("/warehouse/:warehouseId", getInventoryByWarehouse);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [warehouseId, medicationId, quantity]
+ *             required: [warehouseId, schoolSupplyId, quantity]
  *             properties:
  *               warehouseId: { type: integer, example: 1 }
- *               medicationId: { type: integer, example: 1 }
+ *               schoolSupplyId: { type: integer, example: 1 }
  *               quantity: { type: integer, example: 50 }
  *     responses:
  *       201: { description: Inventario actualizado }

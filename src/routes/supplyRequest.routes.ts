@@ -4,7 +4,7 @@ import {
   deleteSupplyRequest,
   getActiveSupplyRequests,
   getAllSupplyRequests,
-  getRequestsByClinic,
+  getRequestsBySchool,
   updateRequestStatus,
 } from "../controllers/supplyRequest.controller";
 import { authenticateToken, authorizeRoles } from "../middlewares/auth";
@@ -32,10 +32,10 @@ router.use(authenticateToken);
  *         application/json:
  *           schema:
  *             type: object
- *             required: [clinicId, medicationId, warehouseId, quantityRequested]
+ *             required: [schoolId, schoolSupplyId, warehouseId, quantityRequested]
  *             properties:
- *               clinicId: { type: integer, example: 1 }
- *               medicationId: { type: integer, example: 1 }
+ *               schoolId: { type: integer, example: 1 }
+ *               schoolSupplyId: { type: integer, example: 1 }
  *               warehouseId: { type: integer, example: 1 }
  *               quantityRequested: { type: integer, example: 20 }
  *               status: { type: string, enum: [pendiente, en_proceso, aprobada, rechazada, completada], example: "pendiente" }
@@ -43,7 +43,7 @@ router.use(authenticateToken);
  *     responses:
  *       201: { description: Solicitud creada }
  *       400: { description: Validación fallida (inventario insuficiente, cantidad inválida) }
- *       404: { description: Clínica, medicamento o almacén no encontrado }
+ *       404: { description: Institución, suministro escolar o almacén no encontrado }
  */
 router.post("/", createSupplyRequest);
 
@@ -73,21 +73,21 @@ router.get("/all", getAllSupplyRequests);
 
 /**
  * @swagger
- * /api/requests/clinic/{clinicId}:
+ * /api/requests/school/{schoolId}:
  *   get:
- *     summary: Historial de solicitudes por clínica
+ *     summary: Historial de solicitudes por institución
  *     tags: [Solicitudes]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
- *         name: clinicId
+ *         name: schoolId
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Historial de la clínica }
- *       404: { description: Clínica no encontrada }
+ *       200: { description: Historial de la institución }
+ *       404: { description: Institución no encontrada }
  */
-router.get("/clinic/:clinicId", getRequestsByClinic);
+router.get("/school/:schoolId", getRequestsBySchool);
 
 /**
  * @swagger

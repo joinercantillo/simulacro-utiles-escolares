@@ -7,7 +7,7 @@ export enum UserRole {
 }
 
 /**
- * Enum con los estados posibles de una solicitud de insumo.
+ * Enum con los estados posibles de una solicitud de suministro.
  */
 export enum RequestStatus {
   PENDIENTE = "pendiente",
@@ -32,9 +32,9 @@ export interface IUser {
 }
 
 /**
- * Interfaz que representa los datos de una clínica.
+ * Interfaz que representa los datos de una institución.
  */
-export interface IClinic {
+export interface ISchool {
   id?: number;
   name: string;
   nit: string;
@@ -62,9 +62,9 @@ export interface IWarehouse {
 }
 
 /**
- * Interfaz que representa los datos de un medicamento.
+ * Interfaz que representa los datos de un suministro escolar.
  */
-export interface IMedication {
+export interface ISchoolSupply {
   id?: number;
   name: string;
   description: string;
@@ -76,24 +76,24 @@ export interface IMedication {
 }
 
 /**
- * Interfaz que representa un registro de inventario de un medicamento en un almacén.
+ * Interfaz que representa un registro de inventario de un suministro escolar en un almacén.
  */
 export interface IInventory {
   id?: number;
   warehouseId: number;
-  medicationId: number;
+  schoolSupplyId: number;
   quantity: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 /**
- * Interfaz que representa una solicitud de insumo de una clínica a un almacén.
+ * Interfaz que representa una solicitud de suministro de una institución a un almacén.
  */
 export interface ISupplyRequest {
   id?: number;
-  clinicId: number;
-  medicationId: number;
+  schoolId: number;
+  schoolSupplyId: number;
   warehouseId: number;
   quantityRequested: number;
   status: RequestStatus;

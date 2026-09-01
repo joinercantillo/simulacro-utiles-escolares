@@ -19,7 +19,7 @@ const router = Router();
  *             required: [name, email, password, role]
  *             properties:
  *               name: { type: string, example: "Ana Torres" }
- *               email: { type: string, example: "ana@riwimed.co" }
+ *               email: { type: string, example: "ana@riwischool.co" }
  *               password: { type: string, example: "clave123" }
  *               role: { type: string, enum: [admin, gestor], example: "admin" }
  *     responses:
@@ -43,7 +43,7 @@ router.post("/register", validateRegister, register);
  *             type: object
  *             required: [email, password]
  *             properties:
- *               email: { type: string, example: "ana@riwimed.co" }
+ *               email: { type: string, example: "ana@riwischool.co" }
  *               password: { type: string, example: "clave123" }
  *     responses:
  *       200: { description: Login exitoso, retorna token JWT }

@@ -1,12 +1,12 @@
 interface InventoryStock {
-  medicationId: number;
+  schoolSupplyId: number;
   warehouseId: number;
   quantity: number;
 }
 
 interface RequestLine {
-  clinicId: number;
-  medicationId: number;
+  schoolId: number;
+  schoolSupplyId: number;
   warehouseId: number;
   quantityRequested: number;
 }
@@ -25,7 +25,7 @@ export class SupplyRequestValidator {
   public validateStock(request: RequestLine): boolean {
     const stock = this.inventory.find(
       (item) =>
-        item.medicationId === request.medicationId &&
+        item.schoolSupplyId === request.schoolSupplyId &&
         item.warehouseId === request.warehouseId
     );
 
@@ -37,7 +37,7 @@ export class SupplyRequestValidator {
   }
 }
 
-export class ClinicValidator {
+export class SchoolValidator {
   private existingNits: Set<string>;
 
   constructor(existingNits: string[]) {
@@ -48,7 +48,7 @@ export class ClinicValidator {
     return this.existingNits.has(nit);
   }
 
-  public hasResponsible(clinic: { responsibleName: string }): boolean {
-    return Boolean(clinic.responsibleName && clinic.responsibleName.trim().length > 0);
+  public hasResponsible(school: { responsibleName: string }): boolean {
+    return Boolean(school.responsibleName && school.responsibleName.trim().length > 0);
   }
 }

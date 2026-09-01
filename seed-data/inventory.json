@@ -2,43 +2,43 @@
   {
     "__type": "inventory",
     "warehouseId": 1,
-    "medicationId": 1,
+    "schoolSupplyId": 1,
     "quantity": 500
   },
   {
     "__type": "inventory",
     "warehouseId": 1,
-    "medicationId": 2,
+    "schoolSupplyId": 2,
     "quantity": 300
   },
   {
     "__type": "inventory",
     "warehouseId": 1,
-    "medicationId": 3,
+    "schoolSupplyId": 3,
     "quantity": 150
   },
   {
     "__type": "inventory",
     "warehouseId": 1,
-    "medicationId": 6,
+    "schoolSupplyId": 6,
     "quantity": 80
   },
   {
     "__type": "inventory",
     "warehouseId": 2,
-    "medicationId": 4,
+    "schoolSupplyId": 4,
     "quantity": 400
   },
   {
     "__type": "inventory",
     "warehouseId": 2,
-    "medicationId": 5,
+    "schoolSupplyId": 5,
     "quantity": 600
   },
   {
     "__type": "inventory",
     "warehouseId": 2,
-    "medicationId": 1,
+    "schoolSupplyId": 1,
     "quantity": 250
   }
 ]

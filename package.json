@@ -1,7 +1,7 @@
 {
-  "name": "riwimed-care-plus",
+  "name": "riwischool-plus",
   "version": "1.0.0",
-  "description": "API REST para gestionar solicitudes de abastecimiento de medicamentos - RiwiMediCare Plus",
+  "description": "API REST para gestionar solicitudes de suministro de útiles escolares - RiwiSchool Plus",
   "main": "dist/app.js",
   "scripts": {
     "build": "tsc",

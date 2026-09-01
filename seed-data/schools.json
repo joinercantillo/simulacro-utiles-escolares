@@ -1,29 +1,29 @@
 [
   {
-    "__type": "clinic",
-    "name": "Clínica Vida Sana",
+    "__type": "school",
+    "name": "Colegio La Esperanza",
     "nit": "900123456-1",
     "address": "Calle 10 # 20-30",
     "phone": "3001234567",
     "responsibleName": "María López",
-    "responsibleEmail": "maria.lopez@vidasana.co"
+    "responsibleEmail": "maria.lopez@esperanza.co"
   },
   {
-    "__type": "clinic",
-    "name": "Centro Médico Esperanza",
+    "__type": "school",
+    "name": "Institución Educativa San José",
     "nit": "900654321-8",
     "address": "Av. 68 # 45-12",
     "phone": "3119876543",
     "responsibleName": "Carlos Pérez",
-    "responsibleEmail": "carlos.perez@centroesperanza.co"
+    "responsibleEmail": "carlos.perez@sanjose.co"
   },
   {
-    "__type": "clinic",
-    "name": "Unidad de Salud Primaria",
+    "__type": "school",
+    "name": "Colegio Técnico del Norte",
     "nit": "800555123-4",
     "address": "Cra 45 # 67-89",
     "phone": "3151112233",
     "responsibleName": "Laura Giraldo",
-    "responsibleEmail": "laura.giraldo@usp.co"
+    "responsibleEmail": "laura.giraldo@ctn.co"
   }
 ]

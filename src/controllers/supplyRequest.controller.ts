@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import {
-  Clinic,
+  School,
   Inventory,
-  Medication,
+  SchoolSupply,
   SupplyRequest,
   Warehouse,
 } from "../models";
@@ -11,10 +11,10 @@ import { RequestStatus } from "../interfaces";
 const VALID_STATUSES = Object.values(RequestStatus);
 
 /**
- * Crea una solicitud de insumo validando la existencia de clínica, medicamento y almacén, y el inventario disponible.
+ * Crea una solicitud de suministro validando la existencia de institución, suministro escolar y almacén, y el inventario disponible.
  * Al crearse, descuenta la cantidad solicitada del inventario del almacén.
  * POST /api/supply-requests
- * @param req Request de Express con body: { clinicId, medicationId, warehouseId, quantityRequested, notes?, status? }.
+ * @param req Request de Express con body: { schoolId, schoolSupplyId, warehouseId, quantityRequested, notes?, status? }.
  * @param res Response de Express.
  * @returns Respuesta HTTP con la solicitud creada o un mensaje de error de validación.
  */
@@ -23,7 +23,7 @@ export async function createSupplyRequest(
   res: Response
 ): Promise<Response> {
   try {
-    const { clinicId, medicationId, warehouseId, quantityRequested, notes, status } = req.body;
+    const { schoolId, schoolSupplyId, warehouseId, quantityRequested, notes, status } = req.body;
 
     if (quantityRequested <= 0) {
       return res.status(400).json({
@@ -31,14 +31,14 @@ export async function createSupplyRequest(
       });
     }
 
-    const clinic = await Clinic.findOne({ where: { id: clinicId, isActive: true } });
-    if (!clinic) {
-      return res.status(404).json({ message: "Clínica no encontrada" });
+    const school = await School.findOne({ where: { id: schoolId, isActive: true } });
+    if (!school) {
+      return res.status(404).json({ message: "Institución no encontrada" });
     }
 
-    const medication = await Medication.findOne({ where: { id: medicationId, isActive: true } });
-    if (!medication) {
-      return res.status(404).json({ message: "Medicamento no encontrado" });
+    const schoolSupply = await SchoolSupply.findOne({ where: { id: schoolSupplyId, isActive: true } });
+    if (!schoolSupply) {
+      return res.status(404).json({ message: "Suministro escolar no encontrado" });
     }
 
     const warehouse = await Warehouse.findOne({ where: { id: warehouseId, isActive: true } });
@@ -51,17 +51,17 @@ export async function createSupplyRequest(
     }
 
     const inventory = await Inventory.findOne({
-      where: { warehouseId, medicationId },
+      where: { warehouseId, schoolSupplyId },
     });
     if (!inventory || inventory.quantity < quantityRequested) {
       return res.status(400).json({
-        message: "El almacén no tiene inventario suficiente del medicamento solicitado",
+        message: "El almacén no tiene inventario suficiente del suministro escolar solicitado",
       });
     }
 
     const supplyRequest = await SupplyRequest.create({
-      clinicId,
-      medicationId,
+      schoolId,
+      schoolSupplyId,
       warehouseId,
       quantityRequested,
       status: status || RequestStatus.PENDIENTE,
@@ -78,11 +78,11 @@ export async function createSupplyRequest(
 }
 
 /**
- * Obtiene todas las solicitudes de insumo activas con sus relaciones.
+ * Obtiene todas las solicitudes de suministro activas con sus relaciones.
  * GET /api/supply-requests
  * @param req Request de Express.
  * @param res Response de Express.
- * @returns Respuesta HTTP con la lista de solicitudes de insumo.
+ * @returns Respuesta HTTP con la lista de solicitudes de suministro.
  */
 export async function getAllSupplyRequests(
   req: Request,
@@ -92,8 +92,8 @@ export async function getAllSupplyRequests(
     const requests = await SupplyRequest.findAll({
       where: { isActive: true },
       include: [
-        { model: Clinic, as: "clinic" },
-        { model: Medication, as: "medication" },
+        { model: School, as: "school" },
+        { model: SchoolSupply, as: "schoolSupply" },
         { model: Warehouse, as: "warehouse" },
       ],
       order: [["createdAt", "DESC"]],
@@ -105,7 +105,7 @@ export async function getAllSupplyRequests(
 }
 
 /**
- * Obtiene las solicitudes de insumo activas con estado pendiente, en proceso o aprobada.
+ * Obtiene las solicitudes de suministro activas con estado pendiente, en proceso o aprobada.
  * @param req Request de Express.
  * @param res Response de Express.
  * @returns Respuesta HTTP con la lista de solicitudes activas.
@@ -121,8 +121,8 @@ export async function getActiveSupplyRequests(
         status: [RequestStatus.PENDIENTE, RequestStatus.EN_PROCESO, RequestStatus.APROBADA],
       },
       include: [
-        { model: Clinic, as: "clinic" },
-        { model: Medication, as: "medication" },
+        { model: School, as: "school" },
+        { model: SchoolSupply, as: "schoolSupply" },
         { model: Warehouse, as: "warehouse" },
       ],
       order: [["createdAt", "DESC"]],
@@ -134,44 +134,44 @@ export async function getActiveSupplyRequests(
 }
 
 /**
- * Obtiene el historial de solicitudes de insumo de una clínica específica.
- * GET /api/supply-requests/clinic/:clinicId
- * @param req Request de Express con params: { clinicId }.
+ * Obtiene el historial de solicitudes de suministro de una institución específica.
+ * GET /api/supply-requests/school/:schoolId
+ * @param req Request de Express con params: { schoolId }.
  * @param res Response de Express.
- * @returns Respuesta HTTP con la clínica y su lista de solicitudes de insumo.
+ * @returns Respuesta HTTP con la institución y su lista de solicitudes de suministro.
  */
-export async function getRequestsByClinic(
+export async function getRequestsBySchool(
   req: Request,
   res: Response
 ): Promise<Response> {
   try {
-    const { clinicId } = req.params;
+    const { schoolId } = req.params;
 
-    const clinic = await Clinic.findOne({ where: { id: clinicId, isActive: true } });
-    if (!clinic) {
-      return res.status(404).json({ message: "Clínica no encontrada" });
+    const school = await School.findOne({ where: { id: schoolId, isActive: true } });
+    if (!school) {
+      return res.status(404).json({ message: "Institución no encontrada" });
     }
 
     const requests = await SupplyRequest.findAll({
-      where: { clinicId, isActive: true },
+      where: { schoolId, isActive: true },
       include: [
-        { model: Medication, as: "medication" },
+        { model: SchoolSupply, as: "schoolSupply" },
         { model: Warehouse, as: "warehouse" },
       ],
       order: [["createdAt", "DESC"]],
     });
 
     return res.json({
-      clinic,
+      school,
       requests,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Error al obtener el historial de la clínica", error });
+    return res.status(500).json({ message: "Error al obtener el historial de la institución", error });
   }
 }
 
 /**
- * Actualiza el estado de una solicitud de insumo existente.
+ * Actualiza el estado de una solicitud de suministro existente.
  * PUT /api/supply-requests/:id/status
  * @param req Request de Express con params: { id } y body: { status }.
  * @param res Response de Express.
@@ -205,7 +205,7 @@ export async function updateRequestStatus(
 }
 
 /**
- * Elimina lógicamente una solicitud de insumo (soft delete).
+ * Elimina lógicamente una solicitud de suministro (soft delete).
  * DELETE /api/supply-requests/:id
  * @param req Request de Express con params: { id }.
  * @param res Response de Express.

@@ -1,18 +1,18 @@
-import { ClinicValidator, SupplyRequestValidator } from "./helpers/requestValidator";
+import { SchoolValidator, SupplyRequestValidator } from "./helpers/requestValidator";
 
 describe("Creación de solicitud de abastecimiento", () => {
   const inventory = [
-    { medicationId: 1, warehouseId: 1, quantity: 100 },
-    { medicationId: 2, warehouseId: 1, quantity: 30 },
-    { medicationId: 3, warehouseId: 2, quantity: 10 },
+    { schoolSupplyId: 1, warehouseId: 1, quantity: 100 },
+    { schoolSupplyId: 2, warehouseId: 1, quantity: 30 },
+    { schoolSupplyId: 3, warehouseId: 2, quantity: 10 },
   ];
 
   const validator = new SupplyRequestValidator(inventory);
 
   test("debe permitir crear solicitud cuando hay stock suficiente", () => {
     const request = {
-      clinicId: 1,
-      medicationId: 1,
+      schoolId: 1,
+      schoolSupplyId: 1,
       warehouseId: 1,
       quantityRequested: 20,
     };
@@ -21,8 +21,8 @@ describe("Creación de solicitud de abastecimiento", () => {
 
   test("debe rechazar solicitud cuando el stock es insuficiente", () => {
     const request = {
-      clinicId: 1,
-      medicationId: 2,
+      schoolId: 1,
+      schoolSupplyId: 2,
       warehouseId: 1,
       quantityRequested: 500,
     };
@@ -36,10 +36,10 @@ describe("Creación de solicitud de abastecimiento", () => {
     expect(validator.validateQuantityRequested(10)).toBe(true);
   });
 
-  test("debe rechazar solicitud cuando no existe inventario del medicamento en el almacén", () => {
+  test("debe rechazar solicitud cuando no existe inventario del suministro escolar en el almacén", () => {
     const request = {
-      clinicId: 1,
-      medicationId: 99,
+      schoolId: 1,
+      schoolSupplyId: 99,
       warehouseId: 1,
       quantityRequested: 1,
     };
@@ -47,20 +47,20 @@ describe("Creación de solicitud de abastecimiento", () => {
   });
 });
 
-describe("Consulta de clínica y asociación de responsable", () => {
-  const clinicValidator = new ClinicValidator(["900123456-1", "900654321-8"]);
+describe("Consulta de institución y asociación de responsable", () => {
+  const schoolValidator = new SchoolValidator(["900123456-1", "900654321-8"]);
 
   test("debe detectar que el NIT está duplicado", () => {
-    expect(clinicValidator.isDuplicatedNit("900123456-1")).toBe(true);
+    expect(schoolValidator.isDuplicatedNit("900123456-1")).toBe(true);
   });
 
   test("debe permitir registrar un NIT nuevo", () => {
-    expect(clinicValidator.isDuplicatedNit("111222333-4")).toBe(false);
+    expect(schoolValidator.isDuplicatedNit("111222333-4")).toBe(false);
   });
 
-  test("la clínica debe poseer un responsable asociado", () => {
-    expect(clinicValidator.hasResponsible({ responsibleName: "María López" })).toBe(true);
-    expect(clinicValidator.hasResponsible({ responsibleName: "" })).toBe(false);
-    expect(clinicValidator.hasResponsible({ responsibleName: "   " })).toBe(false);
+  test("la institución debe poseer un responsable asociado", () => {
+    expect(schoolValidator.hasResponsible({ responsibleName: "María López" })).toBe(true);
+    expect(schoolValidator.hasResponsible({ responsibleName: "" })).toBe(false);
+    expect(schoolValidator.hasResponsible({ responsibleName: "   " })).toBe(false);
   });
 });

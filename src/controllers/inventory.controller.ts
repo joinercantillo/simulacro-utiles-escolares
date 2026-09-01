@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import { Inventory, Medication, Warehouse } from "../models";
+import { Inventory, SchoolSupply, Warehouse } from "../models";
 
 /**
- * Obtiene el inventario de un almacén específico, incluyendo información del medicamento.
+ * Obtiene el inventario de un almacén específico, incluyendo información del suministro escolar.
  * GET /api/inventory/warehouse/:warehouseId
  * @param req Request de Express con params: { warehouseId }.
  * @param res Response de Express.
@@ -16,7 +16,7 @@ export async function getInventoryByWarehouse(
     const { warehouseId } = req.params;
     const inventory = await Inventory.findAll({
       where: { warehouseId },
-      include: [{ model: Medication, as: "medication" }],
+      include: [{ model: SchoolSupply, as: "schoolSupply" }],
     });
     return res.json(inventory);
   } catch (error) {
@@ -25,10 +25,10 @@ export async function getInventoryByWarehouse(
 }
 
 /**
- * Agrega medicamento al inventario de un almacén.
- * Si ya existe un registro para el mismo almacén y medicamento, incrementa la cantidad.
+ * Agrega suministro escolar al inventario de un almacén.
+ * Si ya existe un registro para el mismo almacén y suministro escolar, incrementa la cantidad.
  * POST /api/inventory
- * @param req Request de Express con body: { warehouseId, medicationId, quantity }.
+ * @param req Request de Express con body: { warehouseId, schoolSupplyId, quantity }.
  * @param res Response de Express.
  * @returns Respuesta HTTP con el registro de inventario creado o actualizado.
  */
@@ -37,16 +37,16 @@ export async function addInventory(
   res: Response
 ): Promise<Response> {
   try {
-    const { warehouseId, medicationId, quantity } = req.body;
+    const { warehouseId, schoolSupplyId, quantity } = req.body;
 
     const warehouse = await Warehouse.findOne({ where: { id: warehouseId, isActive: true } });
     if (!warehouse) {
       return res.status(404).json({ message: "Almacén no encontrado" });
     }
 
-    const medication = await Medication.findOne({ where: { id: medicationId, isActive: true } });
-    if (!medication) {
-      return res.status(404).json({ message: "Medicamento no encontrado" });
+    const schoolSupply = await SchoolSupply.findOne({ where: { id: schoolSupplyId, isActive: true } });
+    if (!schoolSupply) {
+      return res.status(404).json({ message: "Suministro escolar no encontrado" });
     }
 
     if (quantity <= 0) {
@@ -54,7 +54,7 @@ export async function addInventory(
     }
 
     const existingInventory = await Inventory.findOne({
-      where: { warehouseId, medicationId },
+      where: { warehouseId, schoolSupplyId },
     });
 
     if (existingInventory) {
@@ -65,7 +65,7 @@ export async function addInventory(
 
     const inventory = await Inventory.create({
       warehouseId,
-      medicationId,
+      schoolSupplyId,
       quantity,
     });
 

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Inventory, Medication, Warehouse } from "../models";
+import { Inventory, SchoolSupply, Warehouse } from "../models";
 
 /**
  * Obtiene todos los almacenes activos junto con su inventario.
@@ -15,7 +15,7 @@ export async function getAllWarehouses(
   try {
     const warehouses = await Warehouse.findAll({
       where: { isActive: true },
-      include: [{ model: Inventory, as: "inventories", include: [{ model: Medication, as: "medication" }] }],
+      include: [{ model: Inventory, as: "inventories", include: [{ model: SchoolSupply, as: "schoolSupply" }] }],
     });
     return res.json(warehouses);
   } catch (error) {
@@ -38,7 +38,7 @@ export async function getWarehouseById(
     const { id } = req.params;
     const warehouse = await Warehouse.findOne({
       where: { id, isActive: true },
-      include: [{ model: Inventory, as: "inventories", include: [{ model: Medication, as: "medication" }] }],
+      include: [{ model: Inventory, as: "inventories", include: [{ model: SchoolSupply, as: "schoolSupply" }] }],
     });
 
     if (!warehouse) {

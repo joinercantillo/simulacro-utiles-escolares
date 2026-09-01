@@ -1,16 +1,16 @@
 [
   {
     "__type": "warehouse",
-    "name": "Almacén Central",
+    "name": "Bodega Central",
     "location": "Zona Industrial Norte Bodega 1",
     "responsibleName": "Ana Torres",
-    "responsibleEmail": "ana.torres@riwimed.co"
+    "responsibleEmail": "ana.torres@riwischool.co"
   },
   {
     "__type": "warehouse",
-    "name": "Almacén Sur",
+    "name": "Bodega Sur",
     "location": "Carrera 30 # 12-85",
     "responsibleName": "Jorge Ramírez",
-    "responsibleEmail": "jorge.ramirez@riwimed.co"
+    "responsibleEmail": "jorge.ramirez@riwischool.co"
   }
 ]

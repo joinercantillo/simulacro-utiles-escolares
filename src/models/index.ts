@@ -1,14 +1,14 @@
-import Clinic from "./Clinic";
+import School from "./School";
 import SupplyRequest from "./SupplyRequest";
 import Warehouse from "./Warehouse";
-import Medication from "./Medication";
+import SchoolSupply from "./SchoolSupply";
 import Inventory from "./Inventory";
 
-Clinic.hasMany(SupplyRequest, { foreignKey: "clinicId", as: "requests" });
-SupplyRequest.belongsTo(Clinic, { foreignKey: "clinicId", as: "clinic" });
+School.hasMany(SupplyRequest, { foreignKey: "schoolId", as: "requests" });
+SupplyRequest.belongsTo(School, { foreignKey: "schoolId", as: "school" });
 
-Medication.hasMany(SupplyRequest, { foreignKey: "medicationId", as: "requests" });
-SupplyRequest.belongsTo(Medication, { foreignKey: "medicationId", as: "medication" });
+SchoolSupply.hasMany(SupplyRequest, { foreignKey: "schoolSupplyId", as: "requests" });
+SupplyRequest.belongsTo(SchoolSupply, { foreignKey: "schoolSupplyId", as: "schoolSupply" });
 
 Warehouse.hasMany(SupplyRequest, { foreignKey: "warehouseId", as: "requests" });
 SupplyRequest.belongsTo(Warehouse, { foreignKey: "warehouseId", as: "warehouse" });
@@ -16,11 +16,11 @@ SupplyRequest.belongsTo(Warehouse, { foreignKey: "warehouseId", as: "warehouse" 
 Warehouse.hasMany(Inventory, { foreignKey: "warehouseId", as: "inventories" });
 Inventory.belongsTo(Warehouse, { foreignKey: "warehouseId", as: "warehouse" });
 
-Medication.hasMany(Inventory, { foreignKey: "medicationId", as: "inventories" });
-Inventory.belongsTo(Medication, { foreignKey: "medicationId", as: "medication" });
+SchoolSupply.hasMany(Inventory, { foreignKey: "schoolSupplyId", as: "inventories" });
+Inventory.belongsTo(SchoolSupply, { foreignKey: "schoolSupplyId", as: "schoolSupply" });
 
 /**
  * Exporta todos los modelos y define las relaciones entre ellos.
- * @returns Referencias a los modelos Clinic, SupplyRequest, Warehouse, Medication e Inventory.
+ * @returns Referencias a los modelos School, SupplyRequest, Warehouse, SchoolSupply e Inventory.
  */
-export { Clinic, SupplyRequest, Warehouse, Medication, Inventory };
+export { School, SupplyRequest, Warehouse, SchoolSupply, Inventory };

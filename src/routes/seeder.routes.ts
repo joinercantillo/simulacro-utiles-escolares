@@ -56,7 +56,7 @@ router.post("/upload", authenticateToken, upload.single("file"), runSeeder);
  * @swagger
  * /api/seeders/default:
  *   post:
- *     summary: Cargar datos base por defecto (usuarios, clínicas, almacenes, medicamentos, inventario)
+ *     summary: Cargar datos base por defecto (usuarios, instituciones, almacenes, suministros escolares, inventario)
  *     tags: [Seeders]
  *     security: [{ bearerAuth: [] }]
  *     responses:

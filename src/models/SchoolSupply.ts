@@ -2,9 +2,9 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
 /**
- * Modelo Sequelize que representa la tabla de medicamentos del sistema.
+ * Modelo Sequelize que representa la tabla de suministros escolares del sistema.
  */
-class Medication extends Model {
+class SchoolSupply extends Model {
   public id!: number;
   public name!: string;
   public description!: string;
@@ -16,9 +16,9 @@ class Medication extends Model {
 }
 
 /**
- * Inicializa el modelo Medication definiendo sus atributos y configuración de la tabla "medications".
+ * Inicializa el modelo SchoolSupply definiendo sus atributos y configuración de la tabla "school_supplies".
  */
-Medication.init(
+SchoolSupply.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -50,9 +50,9 @@ Medication.init(
   },
   {
     sequelize,
-    modelName: "Medication",
-    tableName: "medications",
+    modelName: "SchoolSupply",
+    tableName: "school_supplies",
   }
 );
 
-export default Medication;
+export default SchoolSupply;

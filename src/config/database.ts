@@ -8,7 +8,7 @@ dotenv.config();
  * Utiliza las variables de entorno DB_NAME, DB_USER, DB_PASSWORD, DB_HOST y DB_PORT.
  */
 const sequelize = new Sequelize(
-  process.env.DB_NAME || "riwimed_care_plus",
+  process.env.DB_NAME || "riwischool_plus",
   process.env.DB_USER || "postgres",
   process.env.DB_PASSWORD || "postgres",
   {

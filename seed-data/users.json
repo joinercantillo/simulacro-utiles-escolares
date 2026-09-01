@@ -2,14 +2,14 @@
   {
     "__type": "user",
     "name": "Johana Duque",
-    "email": "johana.duque@riwimed.co",
+    "email": "johana.duque@riwischool.co",
     "password": "coder123",
     "role": "admin"
   },
   {
     "__type": "user",
     "name": "Juan David Restrepo",
-    "email": "juan.restrepo@riwimed.co",
+    "email": "juan.restrepo@riwischool.co",
     "password": "coder123",
     "role": "gestor"
   }

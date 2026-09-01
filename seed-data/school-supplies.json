@@ -1,0 +1,44 @@
+[
+  {
+    "__type": "schoolSupply",
+    "name": "Cuaderno cuadriculado",
+    "description": "Cuaderno de 100 hojas tamaño carta",
+    "category": "Papelería",
+    "unit": "unidad"
+  },
+  {
+    "__type": "schoolSupply",
+    "name": "Lápiz grafito HB",
+    "description": "Lápiz de grafito estándar con borrador",
+    "category": "Papelería",
+    "unit": "caja"
+  },
+  {
+    "__type": "schoolSupply",
+    "name": "Resma de papel",
+    "description": "Resma de 500 hojas carta x75g",
+    "category": "Papelería",
+    "unit": "resma"
+  },
+  {
+    "__type": "schoolSupply",
+    "name": "Colores x12",
+    "description": "Caja de 12 colores escolares",
+    "category": "Artes",
+    "unit": "caja"
+  },
+  {
+    "__type": "schoolSupply",
+    "name": "Morral escolar",
+    "description": "Morral escolar con compartimientos",
+    "category": "Uniformes y accesorios",
+    "unit": "unidad"
+  },
+  {
+    "__type": "schoolSupply",
+    "name": "Tijeras punta roma",
+    "description": "Tijeras escolares de seguridad",
+    "category": "Artes",
+    "unit": "unidad"
+  }
+]

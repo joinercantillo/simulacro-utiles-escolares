@@ -63,10 +63,10 @@ router.get("/:id", getWarehouseById);
  *             type: object
  *             required: [name, location, responsibleName, responsibleEmail]
  *             properties:
- *               name: { type: string, example: "Almacén Central" }
+ *               name: { type: string, example: "Bodega Central" }
  *               location: { type: string, example: "Zona Industrial Norte Bodega 1" }
  *               responsibleName: { type: string, example: "Ana Torres" }
- *               responsibleEmail: { type: string, example: "ana@riwimed.co" }
+ *               responsibleEmail: { type: string, example: "ana@riwischool.co" }
  *     responses:
  *       201: { description: Almacén creado }
  */

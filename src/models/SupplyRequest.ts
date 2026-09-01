@@ -1,17 +1,17 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
-import Clinic from "./Clinic";
-import Medication from "./Medication";
+import School from "./School";
+import SchoolSupply from "./SchoolSupply";
 import Warehouse from "./Warehouse";
 import { RequestStatus } from "../interfaces";
 
 /**
- * Modelo Sequelize que representa la tabla de solicitudes de insumo entre clínicas y almacenes.
+ * Modelo Sequelize que representa la tabla de solicitudes de suministro entre instituciones y almacenes.
  */
 class SupplyRequest extends Model {
   public id!: number;
-  public clinicId!: number;
-  public medicationId!: number;
+  public schoolId!: number;
+  public schoolSupplyId!: number;
   public warehouseId!: number;
   public quantityRequested!: number;
   public status!: RequestStatus;
@@ -31,19 +31,19 @@ SupplyRequest.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    clinicId: {
+    schoolId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Clinic,
+        model: School,
         key: "id",
       },
     },
-    medicationId: {
+    schoolSupplyId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: Medication,
+        model: SchoolSupply,
         key: "id",
       },
     },

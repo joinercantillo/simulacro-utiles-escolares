@@ -5,7 +5,7 @@ import { UserRole } from "../src/interfaces";
 
 const mockUser = {
   id: 1,
-  email: "admin@riwimed.co",
+  email: "admin@riwischool.co",
   role: UserRole.ADMIN,
 };
 
@@ -71,7 +71,7 @@ describe("Middleware de autenticación con JWT", () => {
 
     expect(statusCode()).toBe(0);
     expect(next).toHaveBeenCalledTimes(1);
-    expect(request.user?.email).toBe("admin@riwimed.co");
+    expect(request.user?.email).toBe("admin@riwischool.co");
   });
 });
 
@@ -81,7 +81,7 @@ describe("Middleware de autorización por roles", () => {
     const next = buildNext();
 
     const request = ({
-      user: { id: 2, email: "gestor@riwimed.co", role: UserRole.GESTOR },
+      user: { id: 2, email: "gestor@riwischool.co", role: UserRole.GESTOR },
     } as unknown) as Request & { user?: typeof mockUser };
 
     const guard = authorizeRoles(UserRole.ADMIN);
