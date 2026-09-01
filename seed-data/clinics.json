@@ -1,0 +1,29 @@
+[
+  {
+    "__type": "clinic",
+    "name": "Clínica Vida Sana",
+    "nit": "900123456-1",
+    "address": "Calle 10 # 20-30",
+    "phone": "3001234567",
+    "responsibleName": "María López",
+    "responsibleEmail": "maria.lopez@vidasana.co"
+  },
+  {
+    "__type": "clinic",
+    "name": "Centro Médico Esperanza",
+    "nit": "900654321-8",
+    "address": "Av. 68 # 45-12",
+    "phone": "3119876543",
+    "responsibleName": "Carlos Pérez",
+    "responsibleEmail": "carlos.perez@centroesperanza.co"
+  },
+  {
+    "__type": "clinic",
+    "name": "Unidad de Salud Primaria",
+    "nit": "800555123-4",
+    "address": "Cra 45 # 67-89",
+    "phone": "3151112233",
+    "responsibleName": "Laura Giraldo",
+    "responsibleEmail": "laura.giraldo@usp.co"
+  }
+]
