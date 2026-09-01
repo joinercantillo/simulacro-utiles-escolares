@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: riwimed-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: riwimed_care_plus
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - riwimed-network
+
+  api:
+    build: .
+    container_name: riwimed-api
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: riwimed_care_plus
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      JWT_SECRET: riwimed_secret_key_2024
+      JWT_EXPIRES_IN: 24h
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - riwimed-network
+
+volumes:
+  pgdata:
+
+networks:
+  riwimed-network:
+    driver: bridge
