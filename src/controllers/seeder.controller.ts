@@ -4,6 +4,11 @@ import bcrypt from "bcryptjs";
 import { Clinic, Inventory, Medication, SupplyRequest, Warehouse } from "../models";
 import User from "../models/User";
 
+/**
+ * Crea usuarios en la base de datos si no existen previamente por email.
+ * @param users Arreglo de usuarios a insertar.
+ * @returns Promesa que se resuelve al terminar de insertar.
+ */
 async function seedUsers(users: any[]): Promise<void> {
   for (const user of users) {
     const existing = await User.findOne({ where: { email: user.email } });
@@ -19,6 +24,11 @@ async function seedUsers(users: any[]): Promise<void> {
   }
 }
 
+/**
+ * Crea clínicas en la base de datos si no existen previamente por NIT.
+ * @param clinics Arreglo de clínicas a insertar.
+ * @returns Promesa que se resuelve al terminar de insertar.
+ */
 async function seedClinics(clinics: any[]): Promise<void> {
   for (const clinic of clinics) {
     const existing = await Clinic.findOne({ where: { nit: clinic.nit } });
@@ -35,6 +45,11 @@ async function seedClinics(clinics: any[]): Promise<void> {
   }
 }
 
+/**
+ * Crea almacenes en la base de datos si no existen previamente por nombre.
+ * @param warehouses Arreglo de almacenes a insertar.
+ * @returns Promesa que se resuelve al terminar de insertar.
+ */
 async function seedWarehouses(warehouses: any[]): Promise<void> {
   for (const warehouse of warehouses) {
     const existing = await Warehouse.findOne({ where: { name: warehouse.name } });
@@ -49,6 +64,11 @@ async function seedWarehouses(warehouses: any[]): Promise<void> {
   }
 }
 
+/**
+ * Crea medicamentos en la base de datos si no existen previamente por nombre.
+ * @param medications Arreglo de medicamentos a insertar.
+ * @returns Promesa que se resuelve al terminar de insertar.
+ */
 async function seedMedications(medications: any[]): Promise<void> {
   for (const medication of medications) {
     const existing = await Medication.findOne({ where: { name: medication.name } });
@@ -63,6 +83,11 @@ async function seedMedications(medications: any[]): Promise<void> {
   }
 }
 
+/**
+ * Crea registros de inventario en la base de datos si no existen previamente para el mismo almacén y medicamento.
+ * @param inventory Arreglo de registros de inventario a insertar.
+ * @returns Promesa que se resuelve al terminar de insertar.
+ */
 async function seedInventory(inventory: any[]): Promise<void> {
   for (const item of inventory) {
     const existing = await Inventory.findOne({
@@ -78,6 +103,11 @@ async function seedInventory(inventory: any[]): Promise<void> {
   }
 }
 
+/**
+ * Crea solicitudes de insumo en la base de datos si no existen previamente con la misma combinación de clínica, medicamento y almacén.
+ * @param requests Arreglo de solicitudes de insumo a insertar.
+ * @returns Promesa que se resuelve al terminar de insertar.
+ */
 async function seedSupplyRequests(requests: any[]): Promise<void> {
   for (const request of requests) {
     const existing = await SupplyRequest.findOne({
@@ -100,6 +130,14 @@ async function seedSupplyRequests(requests: any[]): Promise<void> {
   }
 }
 
+/**
+ * Carga la información de entidades a partir de un archivo JSON subido al sistema.
+ * Clasifica cada entidad del arreglo y la inserta a través de los helpers de seed correspondientes.
+ * POST /api/seeders
+ * @param req Request de Express con el archivo JSON en file.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP con un resumen de las entidades cargadas.
+ */
 export async function runSeeder(
   req: Request,
   res: Response
@@ -153,6 +191,13 @@ export async function runSeeder(
   }
 }
 
+/**
+ * Carga los datos base por defecto del sistema: usuarios, clínicas, almacenes, medicamentos e inventario.
+ * POST /api/seeders/default
+ * @param req Request de Express.
+ * @param res Response de Express.
+ * @returns Respuesta HTTP que confirma la carga de los datos base.
+ */
 export async function seedAllDefault(
   req: Request,
   res: Response

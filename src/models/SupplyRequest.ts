@@ -5,6 +5,9 @@ import Medication from "./Medication";
 import Warehouse from "./Warehouse";
 import { RequestStatus } from "../interfaces";
 
+/**
+ * Modelo Sequelize que representa la tabla de solicitudes de insumo entre clínicas y almacenes.
+ */
 class SupplyRequest extends Model {
   public id!: number;
   public clinicId!: number;
@@ -18,6 +21,9 @@ class SupplyRequest extends Model {
   public readonly updatedAt!: Date;
 }
 
+/**
+ * Inicializa el modelo SupplyRequest definiendo sus atributos y configuración de la tabla "supply_requests".
+ */
 SupplyRequest.init(
   {
     id: {

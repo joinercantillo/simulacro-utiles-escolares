@@ -23,6 +23,11 @@ app.use((_req: Request, res: Response) => {
   res.status(404).json({ message: "Ruta no encontrada" });
 });
 
+/**
+ * Inicializa el servidor Express, conecta la base de datos y comienza a escuchar en el puerto configurado.
+ * @returns Promesa que se resuelve cuando el servidor está listo.
+ * @throws Si no se puede conectar a la base de datos, termina el proceso.
+ */
 async function startServer(): Promise<void> {
   try {
     await sequelize.authenticate();
@@ -45,4 +50,8 @@ if (require.main === module) {
   startServer();
 }
 
+/**
+ * Aplicación Express principal del servidor.
+ * @returns Instancia de la aplicación Express y la función startServer que la inicia.
+ */
 export { app, startServer };

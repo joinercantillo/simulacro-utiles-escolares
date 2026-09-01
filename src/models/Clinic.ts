@@ -1,6 +1,9 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 
+/**
+ * Modelo Sequelize que representa la tabla de clínicas del sistema.
+ */
 class Clinic extends Model {
   public id!: number;
   public name!: string;
@@ -14,6 +17,9 @@ class Clinic extends Model {
   public readonly updatedAt!: Date;
 }
 
+/**
+ * Inicializa el modelo Clinic definiendo sus atributos y configuración de la tabla "clinics".
+ */
 Clinic.init(
   {
     id: {

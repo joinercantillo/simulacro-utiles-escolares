@@ -2,6 +2,9 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 import { UserRole } from "../interfaces";
 
+/**
+ * Modelo Sequelize que representa la tabla de usuarios del sistema.
+ */
 class User extends Model {
   public id!: number;
   public name!: string;
@@ -13,6 +16,9 @@ class User extends Model {
   public readonly updatedAt!: Date;
 }
 
+/**
+ * Inicializa el modelo User definiendo sus atributos y configuración de la tabla "users".
+ */
 User.init(
   {
     id: {
