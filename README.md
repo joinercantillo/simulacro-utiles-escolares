@@ -288,6 +288,47 @@ chmod +x scripts/setup.sh
 | `docker-start.sh` | Levanta Docker, espera a PostgreSQL y crea la BD |
 | `setup.sh` | Ejecuta todo: dependencias + Docker + node_modules |
 
+## Scripts de automatización (Windows)
+
+En la carpeta `winscripts/` se encuentran scripts `.bat` para instalar dependencias y levantar
+el proyecto automáticamente en Windows 10/11.
+
+### Script 1 — Instalar dependencias del sistema
+
+Instala Docker Desktop, Node.js 18+ y Git usando `winget`:
+
+```cmd
+winscripts\install-deps.bat
+```
+
+> **Nota:** Se necesita `winget` (incluido en Windows 10/11 actualizado). Si no lo tienes,
+> instálalo desde la Microsoft Store: https://aka.ms/getwinget
+
+### Script 2 — Levantar el proyecto con Docker
+
+Construye los contenedores, crea la base de datos y espera a que PostgreSQL esté listo:
+
+```cmd
+winscripts\docker-start.bat
+```
+
+### Script 3 — Setup completo (instalar + levantar)
+
+Ejecuta todo de una sola vez: instala dependencias del sistema, levanta Docker,
+crea la base de datos e instala `node_modules`:
+
+```cmd
+winscripts\setup.bat
+```
+
+### Resumen de scripts Windows
+
+| Script | Qué hace |
+| ------ | -------- |
+| `install-deps.bat` | Instala Docker Desktop, Node.js 18+ y Git (winget) |
+| `docker-start.bat` | Levanta Docker Desktop, espera a PostgreSQL y crea la BD |
+| `setup.bat` | Ejecuta todo: dependencias + Docker + node_modules |
+
 ## Gitflow y estrategia de ramas
 
 El repositorio sigue la estrategia Gitflow con Conventional Commits:
@@ -332,6 +373,8 @@ src/
 ├── seeders/                # Script opcional de seeders por consola
 ├── swagger/                # Configuración de Swagger JSDoc
 seed-data/                  # Archivos JSON de ejemplo para seeders
+scripts/                    # Scripts de automatización (.sh) para Ubuntu
+winscripts/                 # Scripts de automatización (.bat) para Windows
 tests/                      # Pruebas unitarias con Jest
 Dockerfile                  # Imagen de la aplicación
 docker-compose.yml          # Orquestación API + PostgreSQL
