@@ -8,7 +8,7 @@ ciclo de vida completo de las solicitudes de abastecimiento.
 
 ## Nombre del Coder
 
-**Johana Duque** (actualiza con tu nombre y verifícalo antes de entregar)
+**Joiner Cantillo**
 
 ## Clan
 
@@ -87,8 +87,6 @@ DB_PASSWORD=postgres
 JWT_SECRET=riwischool_secret_key_2024
 JWT_EXPIRES_IN=24h
 ```
-
-> **Importante:** No subas el archivo `.env` a GitHub. Cambia el `JWT_SECRET` en producción.
 
 ## Ejecución del proyecto
 
