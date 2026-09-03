@@ -244,6 +244,50 @@ Para detener:
 docker-compose down
 ```
 
+## Scripts de automatización (Ubuntu)
+
+En la carpeta `scripts/` se encuentran scripts `.sh` para instalar dependencias y levantar
+el proyecto automáticamente en Ubuntu.
+
+### Script 1 — Instalar dependencias del sistema
+
+Instala Docker, Docker Compose, Node.js 18+ y Git en Ubuntu:
+
+```bash
+chmod +x scripts/install-deps.sh
+./scripts/install-deps.sh
+```
+
+> **Nota:** Al terminar, cierra y vuelve a abrir la terminal para que el grupo `docker`
+> surta efecto sin necesidad de `sudo`.
+
+### Script 2 — Levantar el proyecto con Docker
+
+Construye los contenedores, crea la base de datos y espera a que PostgreSQL esté listo:
+
+```bash
+chmod +x scripts/docker-start.sh
+./scripts/docker-start.sh
+```
+
+### Script 3 — Setup completo (instalar + levantar)
+
+Ejecuta todo de una sola vez: instala dependencias del sistema, levanta Docker,
+crea la base de datos e instala `node_modules`:
+
+```bash
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+```
+
+### Resumen de scripts
+
+| Script | Qué hace |
+| ------ | -------- |
+| `install-deps.sh` | Instala Docker, Docker Compose, Node.js 18+ y Git |
+| `docker-start.sh` | Levanta Docker, espera a PostgreSQL y crea la BD |
+| `setup.sh` | Ejecuta todo: dependencias + Docker + node_modules |
+
 ## Gitflow y estrategia de ramas
 
 El repositorio sigue la estrategia Gitflow con Conventional Commits:
