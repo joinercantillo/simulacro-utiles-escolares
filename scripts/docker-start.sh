@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ===========================================================
-# RiwiSchool Plus — Levantar el proyecto con Docker
+# RiwiSchool Plus — Levantar PostgreSQL con Docker (Ubuntu)
 # Ejecutar con: chmod +x scripts/docker-start.sh && ./scripts/docker-start.sh
 # ===========================================================
 set -euo pipefail
@@ -19,7 +19,7 @@ ROOT=$(pwd)
 
 # ── Verificar que Docker esté corriendo ────────────────────
 if ! docker info &>/dev/null; then
-    err "Docker no está corriendo. Iniciando Docker..."
+    warn "Docker no está corriendo. Iniciando Docker..."
     sudo systemctl start docker || { err "No se pudo iniciar Docker. Ejecuta: sudo systemctl start docker"; exit 1; }
 fi
 
@@ -39,9 +39,9 @@ if [ ! -f ".env" ]; then
     fi
 fi
 
-# ── Levantar contenedores ───────────────────────────────────
-log "Construyendo e iniciando contenedores..."
-docker compose up -d --build
+# ── Levantar SOLO PostgreSQL ────────────────────────────────
+log "Levantando PostgreSQL..."
+docker compose up -d db
 
 # ── Esperar a que PostgreSQL esté listo ─────────────────────
 log "Esperando a que PostgreSQL esté disponible..."
@@ -66,15 +66,13 @@ log "Base de datos '$DB_NAME' verificada."
 
 # ── Resumen ─────────────────────────────────────────────────
 echo ""
-log "Proyecto levantado correctamente."
+log "PostgreSQL levantado correctamente."
 echo ""
-echo "  API:             http://localhost:3000"
-echo "  Swagger:         http://localhost:3000/api-docs"
-echo "  Health check:    http://localhost:3000/api/health"
-echo "  Logs (tiempo real): docker compose logs -f api"
+echo "  PostgreSQL: localhost:5432 (Docker)"
 echo ""
-echo "  Carga de seeders:"
-echo "    curl -X POST http://localhost:3000/api/seeders/default -H 'Authorization: Bearer <TOKEN>'"
+echo "  Para iniciar la API:"
+echo "    npm run dev"
 echo ""
-echo "  Para detener:    docker compose down"
+echo "  Para detener PostgreSQL:"
+echo "    docker compose down"
 echo ""

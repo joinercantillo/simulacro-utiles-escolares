@@ -225,23 +225,32 @@ consulta de institución y responsable, cambio de estados y middlewares de auten
 
 ## Docker (punto extra)
 
-Construir y levantar la API junto con PostgreSQL:
+Docker se usa únicamente para ejecutar PostgreSQL. La API se ejecuta localmente
+con `npm run dev` para mayor comodidad en desarrollo y pruebas con Postman.
+
+Levantar solo PostgreSQL:
 
 ```bash
-docker-compose up --build
+docker compose up -d db
+```
+
+Levantar todo (API + PostgreSQL) en Docker (opcional, para despliegue):
+
+```bash
+docker compose up -d --build
 ```
 
 Esto levanta:
 
-- Contenedor `riwischool-api` (aplicación en el puerto 3000).
 - Contenedor `riwischool-db` (PostgreSQL en el puerto 5432).
 - Volumen `pgdata` para persistencia de datos.
+- Volumen `uploads` para persistir archivos subidos.
 - Red interna `riwischool-network` entre ambos servicios.
 
-Para detener:
+Para detener PostgreSQL:
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ## Scripts de automatización (Ubuntu)
@@ -261,19 +270,20 @@ chmod +x scripts/install-deps.sh
 > **Nota:** Al terminar, cierra y vuelve a abrir la terminal para que el grupo `docker`
 > surta efecto sin necesidad de `sudo`.
 
-### Script 2 — Levantar el proyecto con Docker
+### Script 2 — Levantar PostgreSQL con Docker
 
-Construye los contenedores, crea la base de datos y espera a que PostgreSQL esté listo:
+Levantar solo la base de datos en Docker (para usar con `npm run dev`):
 
 ```bash
 chmod +x scripts/docker-start.sh
 ./scripts/docker-start.sh
 ```
 
-### Script 3 — Setup completo (instalar + levantar)
+### Script 3 — Setup completo (instalar + levantar + arrancar)
 
-Ejecuta todo de una sola vez: instala dependencias del sistema, levanta Docker,
-crea la base de datos e instala `node_modules`:
+Ejecuta todo de una sola vez: instala dependencias, levanta PostgreSQL en Docker,
+crea la base de datos, instala `node_modules` e inicia `npm run dev` automáticamente
+para que puedas probar con Postman:
 
 ```bash
 chmod +x scripts/setup.sh
@@ -285,8 +295,8 @@ chmod +x scripts/setup.sh
 | Script | Qué hace |
 | ------ | -------- |
 | `install-deps.sh` | Instala Docker, Docker Compose, Node.js 18+ y Git |
-| `docker-start.sh` | Levanta Docker, espera a PostgreSQL y crea la BD |
-| `setup.sh` | Ejecuta todo: dependencias + Docker + node_modules |
+| `docker-start.sh` | Levanta PostgreSQL en Docker y crea la BD |
+| `setup.sh` | Todo en uno: dependencias + PostgreSQL + npm run dev |
 
 ## Scripts de automatización (Windows)
 
@@ -304,18 +314,19 @@ winscripts\install-deps.bat
 > **Nota:** Se necesita `winget` (incluido en Windows 10/11 actualizado). Si no lo tienes,
 > instálalo desde la Microsoft Store: https://aka.ms/getwinget
 
-### Script 2 — Levantar el proyecto con Docker
+### Script 2 — Levantar PostgreSQL con Docker
 
-Construye los contenedores, crea la base de datos y espera a que PostgreSQL esté listo:
+Levantar solo la base de datos en Docker (para usar con `npm run dev`):
 
 ```cmd
 winscripts\docker-start.bat
 ```
 
-### Script 3 — Setup completo (instalar + levantar)
+### Script 3 — Setup completo (instalar + levantar + arrancar)
 
-Ejecuta todo de una sola vez: instala dependencias del sistema, levanta Docker,
-crea la base de datos e instala `node_modules`:
+Ejecuta todo de una sola vez: instala dependencias, levanta PostgreSQL en Docker,
+crea la base de datos, instala `node_modules` e inicia `npm run dev` automáticamente
+para que puedas probar con Postman:
 
 ```cmd
 winscripts\setup.bat
@@ -326,8 +337,8 @@ winscripts\setup.bat
 | Script | Qué hace |
 | ------ | -------- |
 | `install-deps.bat` | Instala Docker Desktop, Node.js 18+ y Git (winget) |
-| `docker-start.bat` | Levanta Docker Desktop, espera a PostgreSQL y crea la BD |
-| `setup.bat` | Ejecuta todo: dependencias + Docker + node_modules |
+| `docker-start.bat` | Levanta PostgreSQL en Docker y crea la BD |
+| `setup.bat` | Todo en uno: dependencias + PostgreSQL + npm run dev |
 
 ## Gitflow y estrategia de ramas
 

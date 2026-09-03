@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ===========================================================
 # RiwiSchool Plus — Setup completo (Ubuntu)
-# Instala dependencias + levanta Docker + carga seeders
+# Instala dependencias + PostgreSQL en Docker + npm run dev
 # Ejecutar con: chmod +x scripts/setup.sh && ./scripts/setup.sh
 # ===========================================================
 set -euo pipefail
@@ -25,7 +25,7 @@ echo "=========================================="
 echo ""
 
 # ── 1. Instalar dependencias del sistema ────────────────────
-log "Paso 1/5 — Instalando dependencias del sistema..."
+log "Paso 1/6 — Instalando dependencias del sistema..."
 if bash scripts/install-deps.sh; then
     log "Dependencias del sistema instaladas."
 else
@@ -34,19 +34,19 @@ else
 fi
 
 # ── 2. Verificar que Docker esté corriendo ──────────────────
-log "Paso 2/5 — Verificando Docker..."
+log "Paso 2/6 — Verificando Docker..."
 if ! docker info &>/dev/null; then
     sudo systemctl start docker || true
     sleep 2
     if ! docker info &>/dev/null; then
-        err "Docker no está corriendo. Ejecuta manualmente: sudo systemctl start docker"
+        err "Docker no está corriendo. Ejecuta: sudo systemctl start docker"
         exit 1
     fi
 fi
 log "Docker corriendo."
 
 # ── 3. Preparar entorno ─────────────────────────────────────
-log "Paso 3/5 — Preparando archivos de entorno..."
+log "Paso 3/6 — Preparando archivos de entorno..."
 if [ ! -f ".env" ]; then
     cp .env.example .env
     log ".env creado desde .env.example"
@@ -54,21 +54,38 @@ else
     log ".env ya existe."
 fi
 
-# ── 4. Levantar Docker ──────────────────────────────────────
-log "Paso 4/5 — Levantando contenedores Docker..."
-if bash scripts/docker-start.sh; then
-    log "Contenedores levantados."
-else
-    err "Error al levantar Docker."
-    exit 1
-fi
+# ── 4. Levantar SOLO PostgreSQL en Docker ───────────────────
+log "Paso 4/6 — Levantando PostgreSQL en Docker..."
+docker compose up -d db
 
-# ── 5. Instalar dependencias Node.js (para desarrollo local) ─
-log "Paso 5/5 — Instalando dependencias Node.js..."
+# Esperar a que PostgreSQL esté listo
+log "Esperando a que PostgreSQL esté disponible..."
+RETRIES=30
+until docker compose exec -T db pg_isready -U postgres -q 2>/dev/null; do
+    RETRIES=$((RETRIES - 1))
+    if [ "$RETRIES" -le 0 ]; then
+        err "PostgreSQL no respondió. Revisa: docker compose logs db"
+        exit 1
+    fi
+    sleep 1
+done
+log "PostgreSQL listo."
+
+# Crear la base de datos si no existe
+DB_NAME=$(grep DB_NAME .env | cut -d= -f2)
+DB_USER=$(grep DB_USER .env | cut -d= -f2)
+docker compose exec -T db psql -U "$DB_USER" -tc \
+    "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME'" | grep -q 1 \
+    || docker compose exec -T db psql -U "$DB_USER" -c "CREATE DATABASE $DB_NAME"
+log "Base de datos '$DB_NAME' verificada."
+
+# ── 5. Instalar dependencias Node.js ────────────────────────
+log "Paso 5/6 — Instalando dependencias Node.js..."
 npm install --silent 2>/dev/null
 log "node_modules instalado."
 
-# ── Resumen final ────────────────────────────────────────────
+# ── 6. Iniciar servidor en modo desarrollo ───────────────────
+log "Paso 6/6 — Iniciando servidor en modo desarrollo..."
 echo ""
 echo "=========================================="
 log "  ¡Setup completo!"
@@ -78,15 +95,16 @@ echo "  Servidor:    http://localhost:3000"
 echo "  Swagger:     http://localhost:3000/api-docs"
 echo "  Health:      http://localhost:3000/api/health"
 echo ""
-echo "  Desarrollo local (fuera de Docker):"
-echo "    npm run dev"
-echo ""
-echo "  Levantar Docker:"
-echo "    ./scripts/docker-start.sh"
+echo "  PostgreSQL:  localhost:5432 (Docker)"
 echo ""
 echo "  Cargar seeders de prueba:"
 echo "    curl -X POST http://localhost:3000/api/seeders/default -H 'Authorization: Bearer <TOKEN>'"
 echo ""
-echo "  Detener Docker:"
+echo "  Para detener PostgreSQL:"
 echo "    docker compose down"
 echo ""
+echo "  Iniciando npm run dev..."
+echo "=========================================="
+echo ""
+
+npm run dev

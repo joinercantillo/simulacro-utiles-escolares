@@ -1,16 +1,16 @@
 @echo off
 :: ===========================================================
-:: RiwiSchool Plus - Levantar el proyecto con Docker (Windows)
+:: RiwiSchool Plus — Levantar PostgreSQL con Docker (Windows)
 :: Ejecutar: winscripts\docker-start.bat
 :: ===========================================================
 setlocal enabledelayedexpansion
-title RiwiSchool Plus - Levantando Docker...
+title RiwiSchool Plus - PostgreSQL en Docker...
 
 cd /d "%~dp0.."
 
 echo.
 echo ==========================================
-echo   Levantando contenedores Docker...
+echo   Levantando PostgreSQL en Docker...
 echo ==========================================
 echo.
 
@@ -52,14 +52,9 @@ if not exist ".env" (
     )
 )
 
-:: --- Levantar contenedores ---
-echo [*] Construyendo e iniciando contenedores...
-docker compose up -d --build
-if %errorlevel% neq 0 (
-    echo [X] Error al levantar contenedores.
-    pause
-    exit /b 1
-)
+:: --- Levantar SOLO PostgreSQL ---
+echo [*] Iniciando contenedor PostgreSQL...
+docker compose up -d db
 
 :: --- Esperar a que PostgreSQL este listo ---
 echo [*] Esperando a que PostgreSQL este disponible...
@@ -92,19 +87,16 @@ if %errorlevel% neq 0 (
 
 echo.
 echo ==========================================
-echo   Proyecto levantado correctamente!
+echo   PostgreSQL levantado correctamente!
 echo ==========================================
 echo.
-echo   API:          http://localhost:3000
-echo   Swagger:      http://localhost:3000/api-docs
-echo   Health check: http://localhost:3000/api/health
+echo   PostgreSQL: localhost:5432
 echo.
-echo   Logs (tiempo real): docker compose logs -f api
+echo   Para iniciar la API:
+echo     npm run dev
 echo.
-echo   Cargar seeders:
-echo     curl -X POST http://localhost:3000/api/seeders/default -H "Authorization: Bearer ^<TOKEN^>"
-echo.
-echo   Para detener: docker compose down
+echo   Para detener PostgreSQL:
+echo     docker compose down
 echo.
 
 pause
