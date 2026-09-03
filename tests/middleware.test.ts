@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Request, Response } from "express";
 import { authenticateToken, authorizeRoles } from "../src/middlewares/auth";
-import { UserRole } from "../src/interfaces";
+import { UserRole } from "../src/types";
 
 const mockUser = {
   id: 1,

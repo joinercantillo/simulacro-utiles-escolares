@@ -3,7 +3,9 @@ import sequelize from "../config/database";
 import "../models";
 import bcrypt from "bcryptjs";
 import { School, Inventory, SchoolSupply, SupplyRequest, Warehouse } from "../models";
-import User from "../models/User";
+import User from "../models/user.model";
+import { UserRole } from "../types";
+import { RequestStatus } from "../types";
 
 dotenv.config();
 
@@ -21,8 +23,8 @@ async function seed(): Promise<void> {
     console.log("Base de datos sincronizada");
 
     const users = [
-      { name: "Administrador Principal", email: "admin@riwischool.co", password: await bcrypt.hash("admin123", 10), role: "admin" },
-      { name: "Gestor de Solicitudes", email: "gestor@riwischool.co", password: await bcrypt.hash("gestor123", 10), role: "gestor" },
+      { name: "Administrador Principal", email: "admin@riwischool.co", password: await bcrypt.hash("admin123", 10), role: UserRole.ADMIN },
+      { name: "Gestor de Solicitudes", email: "gestor@riwischool.co", password: await bcrypt.hash("gestor123", 10), role: UserRole.GESTOR },
     ];
     await User.bulkCreate(users);
     console.log("Usuarios creados:", users.length);
@@ -59,8 +61,8 @@ async function seed(): Promise<void> {
     console.log("Inventario creado");
 
     await SupplyRequest.bulkCreate([
-      { schoolId: 1, schoolSupplyId: 1, warehouseId: 1, quantityRequested: 20, status: "aprobada", notes: "Reabastecimiento mensual" },
-      { schoolId: 2, schoolSupplyId: 4, warehouseId: 2, quantityRequested: 15, status: "pendiente", notes: "Primera solicitud" },
+      { schoolId: 1, schoolSupplyId: 1, warehouseId: 1, quantityRequested: 20, status: RequestStatus.APROBADA, notes: "Reabastecimiento mensual" },
+      { schoolId: 2, schoolSupplyId: 4, warehouseId: 2, quantityRequested: 15, status: RequestStatus.PENDIENTE, notes: "Primera solicitud" },
     ]);
     console.log("Solicitudes creadas");
 

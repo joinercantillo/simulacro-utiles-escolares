@@ -3,8 +3,15 @@ import cors from "cors";
 import swaggerUi from "swagger-ui-express";
 import dotenv from "dotenv";
 import sequelize from "./config/database";
-import routes from "./routes";
 import swaggerSpec from "./swagger/swagger";
+
+import authRouter from "./routes/auth.router";
+import schoolRouter from "./routes/school.router";
+import warehouseRouter from "./routes/warehouse.router";
+import schoolSupplyRouter from "./routes/schoolSupply.router";
+import supplyRequestRouter from "./routes/supplyRequest.router";
+import inventoryRouter from "./routes/inventory.router";
+import seederRouter from "./routes/seeder.router";
 
 dotenv.config();
 
@@ -17,7 +24,17 @@ app.use(express.json());
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.use("/api", routes);
+app.get("/api/health", (_req: Request, res: Response) => {
+  res.json({ status: "ok", message: "API RiwiSchool Plus funcionando" });
+});
+
+app.use("/api/auth", authRouter);
+app.use("/api/school", schoolRouter);
+app.use("/api/warehouse", warehouseRouter);
+app.use("/api/school-supply", schoolSupplyRouter);
+app.use("/api/request", supplyRequestRouter);
+app.use("/api/inventory", inventoryRouter);
+app.use("/api/seeder", seederRouter);
 
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ message: "Ruta no encontrada" });

@@ -1,167 +1,122 @@
-import { Request, Response } from "express";
+import { Router, type Request, type Response } from "express";
+import multer from "multer";
+import path from "path";
 import fs from "fs";
 import bcrypt from "bcryptjs";
 import { School, Inventory, SchoolSupply, SupplyRequest, Warehouse } from "../models";
-import User from "../models/User";
-import {
-  ISeedUser,
-  ISeedSchool,
-  ISeedWarehouse,
-  ISeedSchoolSupply,
-  ISeedInventory,
-  ISeedSupplyRequest,
-} from "../interfaces";
+import User from "../models/user.model";
+import { authenticateToken } from "../middlewares/auth";
 
-/**
- * Crea usuarios en la base de datos si no existen previamente por email.
- * @param users Arreglo de usuarios a insertar.
- * @returns Promesa que se resuelve al terminar de insertar.
- */
+const uploadsDir = path.join(__dirname, "../../uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const upload = multer({
+  dest: uploadsDir,
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype === "application/json" || file.originalname.endsWith(".json")) {
+      cb(null, true);
+    } else {
+      cb(new Error("Solo se permiten archivos JSON") as any);
+    }
+  },
+});
+
+interface ISeedUser { name: string; email: string; password: string; role: string; }
+interface ISeedSchool { name: string; nit: string; address: string; phone: string; responsibleName: string; responsibleEmail: string; }
+interface ISeedWarehouse { name: string; location: string; responsibleName: string; responsibleEmail: string; }
+interface ISeedSchoolSupply { name: string; description: string; category: string; unit?: string; }
+interface ISeedInventory { warehouseId: number; schoolSupplyId: number; quantity: number; }
+interface ISeedSupplyRequest { schoolId: number; schoolSupplyId: number; warehouseId: number; quantityRequested: number; status?: string; notes?: string; }
+
 async function seedUsers(users: ISeedUser[]): Promise<void> {
   for (const user of users) {
     const existing = await User.findOne({ where: { email: user.email } });
     if (existing) continue;
-
     const hashedPassword = await bcrypt.hash(user.password || "123456", 10);
-    await User.create({
-      name: user.name,
-      email: user.email,
-      password: hashedPassword,
-      role: user.role,
-    });
+    await User.create({ name: user.name, email: user.email, password: hashedPassword, role: user.role as any });
   }
 }
 
-/**
- * Crea instituciones en la base de datos si no existen previamente por NIT.
- * @param schools Arreglo de instituciones a insertar.
- * @returns Promesa que se resuelve al terminar de insertar.
- */
 async function seedSchools(schools: ISeedSchool[]): Promise<void> {
   for (const school of schools) {
     const existing = await School.findOne({ where: { nit: school.nit } });
     if (existing) continue;
-
-    await School.create({
-      name: school.name,
-      nit: school.nit,
-      address: school.address,
-      phone: school.phone,
-      responsibleName: school.responsibleName,
-      responsibleEmail: school.responsibleEmail,
-    });
+    await School.create(school);
   }
 }
 
-/**
- * Crea almacenes en la base de datos si no existen previamente por nombre.
- * @param warehouses Arreglo de almacenes a insertar.
- * @returns Promesa que se resuelve al terminar de insertar.
- */
 async function seedWarehouses(warehouses: ISeedWarehouse[]): Promise<void> {
   for (const warehouse of warehouses) {
     const existing = await Warehouse.findOne({ where: { name: warehouse.name } });
     if (existing) continue;
-
-    await Warehouse.create({
-      name: warehouse.name,
-      location: warehouse.location,
-      responsibleName: warehouse.responsibleName,
-      responsibleEmail: warehouse.responsibleEmail,
-    });
+    await Warehouse.create(warehouse);
   }
 }
 
-/**
- * Crea suministros escolares en la base de datos si no existen previamente por nombre.
- * @param schoolSupplies Arreglo de suministros escolares a insertar.
- * @returns Promesa que se resuelve al terminar de insertar.
- */
-async function seedSchoolSupplies(schoolSupplies: ISeedSchoolSupply[]): Promise<void> {
-  for (const schoolSupply of schoolSupplies) {
-    const existing = await SchoolSupply.findOne({ where: { name: schoolSupply.name } });
+async function seedSchoolSupplies(supplies: ISeedSchoolSupply[]): Promise<void> {
+  for (const supply of supplies) {
+    const existing = await SchoolSupply.findOne({ where: { name: supply.name } });
     if (existing) continue;
-
-    await SchoolSupply.create({
-      name: schoolSupply.name,
-      description: schoolSupply.description,
-      category: schoolSupply.category,
-      unit: schoolSupply.unit || "unidad",
-    });
+    await SchoolSupply.create({ ...supply, unit: supply.unit || "unidad" });
   }
 }
 
-/**
- * Crea registros de inventario en la base de datos si no existen previamente para el mismo almacén y suministro escolar.
- * @param inventory Arreglo de registros de inventario a insertar.
- * @returns Promesa que se resuelve al terminar de insertar.
- */
 async function seedInventory(inventory: ISeedInventory[]): Promise<void> {
   for (const item of inventory) {
-    const existing = await Inventory.findOne({
-      where: { warehouseId: item.warehouseId, schoolSupplyId: item.schoolSupplyId },
-    });
+    const existing = await Inventory.findOne({ where: { warehouseId: item.warehouseId, schoolSupplyId: item.schoolSupplyId } });
     if (existing) continue;
-
-    await Inventory.create({
-      warehouseId: item.warehouseId,
-      schoolSupplyId: item.schoolSupplyId,
-      quantity: item.quantity,
-    });
+    await Inventory.create(item);
   }
 }
 
-/**
- * Crea solicitudes de suministro en la base de datos si no existen previamente con la misma combinación de institución, suministro escolar y almacén.
- * @param requests Arreglo de solicitudes de suministro a insertar.
- * @returns Promesa que se resuelve al terminar de insertar.
- */
 async function seedSupplyRequests(requests: ISeedSupplyRequest[]): Promise<void> {
   for (const request of requests) {
-    const existing = await SupplyRequest.findOne({
-      where: {
-        schoolId: request.schoolId,
-        schoolSupplyId: request.schoolSupplyId,
-        warehouseId: request.warehouseId,
-      },
-    });
+    const existing = await SupplyRequest.findOne({ where: { schoolId: request.schoolId, schoolSupplyId: request.schoolSupplyId, warehouseId: request.warehouseId } });
     if (existing) continue;
-
-    await SupplyRequest.create({
-      schoolId: request.schoolId,
-      schoolSupplyId: request.schoolSupplyId,
-      warehouseId: request.warehouseId,
-      quantityRequested: request.quantityRequested,
-      status: request.status || "pendiente",
-      notes: request.notes,
-    });
+    await SupplyRequest.create({ ...request, status: (request.status || "pendiente") as any, notes: request.notes || "" });
   }
 }
 
-/**
- * Carga la información de entidades a partir de un archivo JSON subido al sistema.
- * Clasifica cada entidad del arreglo y la inserta a través de los helpers de seed correspondientes.
- * POST /api/seeders
- * @param req Request de Express con el archivo JSON en file.
- * @param res Response de Express.
- * @returns Respuesta HTTP con un resumen de las entidades cargadas.
+const router = Router();
+
+/** @swagger
+ * tags:
+ *   name: Seeders
+ *   description: Carga de datos base mediante archivos JSON
  */
-export async function runSeeder(
-  req: Request,
-  res: Response
-): Promise<Response> {
+
+/**
+ * @swagger
+ * /seeder/upload:
+ *   post:
+ *     summary: Cargar datos base desde un archivo JSON
+ *     tags: [Seeders]
+ *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201: { description: Datos cargados }
+ *       400: { description: Archivo inválido }
+ */
+router.post("/upload", authenticateToken, upload.single("file"), async (req: Request, res: Response) => {
   try {
     const file = req.file;
-    if (!file) {
-      return res.status(400).json({ message: "Debes subir un archivo JSON" });
-    }
+    if (!file) return res.status(400).json({ message: "Debes subir un archivo JSON" });
 
     const rawData = fs.readFileSync(file.path, "utf-8");
     const data = JSON.parse(rawData);
 
-    if (!Array.isArray(data)) {
-      return res.status(400).json({ message: "El archivo debe contener un arreglo de entidades" });
-    }
+    if (!Array.isArray(data)) return res.status(400).json({ message: "El archivo debe contener un arreglo de entidades" });
 
     const summaries: Record<string, number> = {};
 
@@ -187,29 +142,23 @@ export async function runSeeder(
       }
     }
 
-    return res.status(201).json({
-      message: "Seeders cargados exitosamente",
-      seeders: summaries,
-    });
+    return res.status(201).json({ message: "Seeders cargados exitosamente", seeders: summaries });
   } catch (error) {
-    return res.status(500).json({
-      message: "Error al cargar los seeders. Verifica que el JSON tenga el formato correcto",
-      error,
-    });
+    return res.status(500).json({ message: "Error al cargar los seeders. Verifica que el JSON tenga el formato correcto", error });
   }
-}
+});
 
 /**
- * Carga los datos base por defecto del sistema: usuarios, instituciones, almacenes, suministros escolares e inventario.
- * POST /api/seeders/default
- * @param req Request de Express.
- * @param res Response de Express.
- * @returns Respuesta HTTP que confirma la carga de los datos base.
+ * @swagger
+ * /seeder/default:
+ *   post:
+ *     summary: Cargar datos base por defecto
+ *     tags: [Seeders]
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       201: { description: Datos base cargados }
  */
-export async function seedAllDefault(
-  req: Request,
-  res: Response
-): Promise<Response> {
+router.post("/default", authenticateToken, async (_req: Request, res: Response) => {
   try {
     await seedUsers([
       { name: "Administrador Principal", email: "admin@riwischool.co", password: "admin123", role: "admin" },
@@ -243,4 +192,6 @@ export async function seedAllDefault(
   } catch (error) {
     return res.status(500).json({ message: "Error al cargar datos base", error });
   }
-}
+});
+
+export default router;

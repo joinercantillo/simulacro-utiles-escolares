@@ -1,4 +1,4 @@
-import { RequestStatus } from "../../src/interfaces";
+import { RequestStatus } from "../../src/types";
 
 export const VALID_STATUSES: RequestStatus[] = [
   RequestStatus.PENDIENTE,

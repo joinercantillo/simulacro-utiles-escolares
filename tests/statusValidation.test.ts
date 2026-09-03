@@ -1,5 +1,5 @@
 import { RequestStateValidator, VALID_STATUSES } from "./helpers/statusValidator";
-import { RequestStatus } from "../src/interfaces";
+import { RequestStatus } from "../src/types";
 
 describe("Cambio de estado de solicitudes", () => {
   test("debe permitir actualizar a estados válidos", () => {

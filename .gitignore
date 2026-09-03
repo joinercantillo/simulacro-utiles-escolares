@@ -3,4 +3,5 @@ dist/
 .env
 coverage/
 uploads/
+temp-referencia/
 *.log
