@@ -3,13 +3,21 @@ import fs from "fs";
 import bcrypt from "bcryptjs";
 import { School, Inventory, SchoolSupply, SupplyRequest, Warehouse } from "../models";
 import User from "../models/User";
+import {
+  ISeedUser,
+  ISeedSchool,
+  ISeedWarehouse,
+  ISeedSchoolSupply,
+  ISeedInventory,
+  ISeedSupplyRequest,
+} from "../interfaces";
 
 /**
  * Crea usuarios en la base de datos si no existen previamente por email.
  * @param users Arreglo de usuarios a insertar.
  * @returns Promesa que se resuelve al terminar de insertar.
  */
-async function seedUsers(users: any[]): Promise<void> {
+async function seedUsers(users: ISeedUser[]): Promise<void> {
   for (const user of users) {
     const existing = await User.findOne({ where: { email: user.email } });
     if (existing) continue;
@@ -29,7 +37,7 @@ async function seedUsers(users: any[]): Promise<void> {
  * @param schools Arreglo de instituciones a insertar.
  * @returns Promesa que se resuelve al terminar de insertar.
  */
-async function seedSchools(schools: any[]): Promise<void> {
+async function seedSchools(schools: ISeedSchool[]): Promise<void> {
   for (const school of schools) {
     const existing = await School.findOne({ where: { nit: school.nit } });
     if (existing) continue;
@@ -50,7 +58,7 @@ async function seedSchools(schools: any[]): Promise<void> {
  * @param warehouses Arreglo de almacenes a insertar.
  * @returns Promesa que se resuelve al terminar de insertar.
  */
-async function seedWarehouses(warehouses: any[]): Promise<void> {
+async function seedWarehouses(warehouses: ISeedWarehouse[]): Promise<void> {
   for (const warehouse of warehouses) {
     const existing = await Warehouse.findOne({ where: { name: warehouse.name } });
     if (existing) continue;
@@ -69,7 +77,7 @@ async function seedWarehouses(warehouses: any[]): Promise<void> {
  * @param schoolSupplies Arreglo de suministros escolares a insertar.
  * @returns Promesa que se resuelve al terminar de insertar.
  */
-async function seedSchoolSupplies(schoolSupplies: any[]): Promise<void> {
+async function seedSchoolSupplies(schoolSupplies: ISeedSchoolSupply[]): Promise<void> {
   for (const schoolSupply of schoolSupplies) {
     const existing = await SchoolSupply.findOne({ where: { name: schoolSupply.name } });
     if (existing) continue;
@@ -88,7 +96,7 @@ async function seedSchoolSupplies(schoolSupplies: any[]): Promise<void> {
  * @param inventory Arreglo de registros de inventario a insertar.
  * @returns Promesa que se resuelve al terminar de insertar.
  */
-async function seedInventory(inventory: any[]): Promise<void> {
+async function seedInventory(inventory: ISeedInventory[]): Promise<void> {
   for (const item of inventory) {
     const existing = await Inventory.findOne({
       where: { warehouseId: item.warehouseId, schoolSupplyId: item.schoolSupplyId },
@@ -108,7 +116,7 @@ async function seedInventory(inventory: any[]): Promise<void> {
  * @param requests Arreglo de solicitudes de suministro a insertar.
  * @returns Promesa que se resuelve al terminar de insertar.
  */
-async function seedSupplyRequests(requests: any[]): Promise<void> {
+async function seedSupplyRequests(requests: ISeedSupplyRequest[]): Promise<void> {
   for (const request of requests) {
     const existing = await SupplyRequest.findOne({
       where: {

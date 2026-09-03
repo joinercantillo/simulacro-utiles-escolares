@@ -111,3 +111,52 @@ export interface JwtPayload {
   email: string;
   role: UserRole;
 }
+
+/**
+ * Interfaces para los datos de entrada de seeders.
+ * Representan lo que viene en el JSON antes de insertar en la BD.
+ */
+export interface ISeedUser {
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+}
+
+export interface ISeedSchool {
+  name: string;
+  nit: string;
+  address: string;
+  phone: string;
+  responsibleName: string;
+  responsibleEmail: string;
+}
+
+export interface ISeedWarehouse {
+  name: string;
+  location: string;
+  responsibleName: string;
+  responsibleEmail: string;
+}
+
+export interface ISeedSchoolSupply {
+  name: string;
+  description: string;
+  category: string;
+  unit?: string;
+}
+
+export interface ISeedInventory {
+  warehouseId: number;
+  schoolSupplyId: number;
+  quantity: number;
+}
+
+export interface ISeedSupplyRequest {
+  schoolId: number;
+  schoolSupplyId: number;
+  warehouseId: number;
+  quantityRequested: number;
+  status?: string;
+  notes?: string;
+}
