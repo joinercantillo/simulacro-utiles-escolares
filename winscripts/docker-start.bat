@@ -1,26 +1,26 @@
 @echo off
 :: ===========================================================
-:: RiwiSchool Plus — Levantar PostgreSQL con Docker (Windows)
-:: Ejecutar: winscripts\docker-start.bat
+:: RiwiSchool Plus — Start PostgreSQL with Docker (Windows)
+:: Run: winscripts\docker-start.bat
 :: ===========================================================
 setlocal enabledelayedexpansion
-title RiwiSchool Plus - PostgreSQL en Docker...
+title RiwiSchool Plus - PostgreSQL in Docker...
 
 cd /d "%~dp0.."
 
 echo.
 echo ==========================================
-echo   Levantando PostgreSQL en Docker...
+echo   Starting PostgreSQL in Docker...
 echo ==========================================
 echo.
 
-:: --- Verificar Docker ---
+:: --- Check Docker ---
 docker info >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [!] Docker no esta corriendo.
-    echo [*] Intentando iniciar Docker Desktop...
+    echo [!] Docker is not running.
+    echo [*] Attempting to start Docker Desktop...
     start "" "C:\Program Files\Docker\Docker\Docker Desktop.exe" 2>nul
-    echo [*] Esperando a que Docker este listo...
+    echo [*] Waiting for Docker to be ready...
     set /a RETRIES=30
     :WAIT_DOCKER
     timeout /t 2 /nobreak >nul
@@ -28,74 +28,74 @@ if %errorlevel% neq 0 (
     if !errorlevel! neq 0 (
         set /a RETRIES-=1
         if !RETRIES! leq 0 (
-            echo [X] Docker no respondio. Abre Docker Desktop manualmente y vuelve a ejecutar este script.
+            echo [X] Docker did not respond. Open Docker Desktop manually and run this script again.
             pause
             exit /b 1
         )
         goto WAIT_DOCKER
     )
-    echo [OK] Docker esta corriendo.
+    echo [OK] Docker is running.
 )
 
-:: --- Verificar docker-compose.yml ---
+:: --- Check docker-compose.yml ---
 if not exist "docker-compose.yml" (
-    echo [X] No se encontro docker-compose.yml en el directorio actual.
+    echo [X] docker-compose.yml not found in the current directory.
     pause
     exit /b 1
 )
 
-:: --- Copiar .env si no existe ---
+:: --- Copy .env if it does not exist ---
 if not exist ".env" (
     if exist ".env.example" (
         copy .env.example .env >nul
-        echo [OK] Archivo .env creado desde .env.example
+        echo [OK] File .env created from .env.example
     )
 )
 
-:: --- Levantar SOLO PostgreSQL ---
-echo [*] Iniciando contenedor PostgreSQL...
+:: --- Start PostgreSQL only ---
+echo [*] Starting PostgreSQL container...
 docker compose up -d db
 
-:: --- Esperar a que PostgreSQL este listo ---
-echo [*] Esperando a que PostgreSQL este disponible...
+:: --- Wait for PostgreSQL to be ready ---
+echo [*] Waiting for PostgreSQL to be available...
 set /a RETRIES=30
 :WAIT_DB
 docker compose exec -T db pg_isready -U postgres -q >nul 2>&1
 if %errorlevel% neq 0 (
     set /a RETRIES-=1
     if !RETRIES! leq 0 (
-        echo [X] PostgreSQL no respondio. Revisa los logs con: docker compose logs db
+        echo [X] PostgreSQL did not respond. Check the logs with: docker compose logs db
         pause
         exit /b 1
     )
     timeout /t 1 /nobreak >nul
     goto WAIT_DB
 )
-echo [OK] PostgreSQL listo.
+echo [OK] PostgreSQL ready.
 
-:: --- Crear base de datos si no existe ---
+:: --- Create database if it does not exist ---
 for /f "tokens=2 delims==" %%a in ('findstr /B "DB_NAME=" .env') do set "DB_NAME=%%a"
 for /f "tokens=2 delims==" %%a in ('findstr /B "DB_USER=" .env') do set "DB_USER=%%a"
 
 docker compose exec -T db psql -U %DB_USER% -tc "SELECT 1 FROM pg_database WHERE datname = '%DB_NAME%'" 2>nul | findstr /C:"1" >nul
 if %errorlevel% neq 0 (
     docker compose exec -T db psql -U %DB_USER% -c "CREATE DATABASE %DB_NAME%"
-    echo [OK] Base de datos '%DB_NAME%' creada.
+    echo [OK] Database '%DB_NAME%' created.
 ) else (
-    echo [OK] Base de datos '%DB_NAME%' ya existe.
+    echo [OK] Database '%DB_NAME%' already exists.
 )
 
 echo.
 echo ==========================================
-echo   PostgreSQL levantado correctamente!
+echo   PostgreSQL started successfully!
 echo ==========================================
 echo.
 echo   PostgreSQL: localhost:5432
 echo.
-echo   Para iniciar la API:
+echo   To start the API:
 echo     npm run dev
 echo.
-echo   Para detener PostgreSQL:
+echo   To stop PostgreSQL:
 echo     docker compose down
 echo.
 

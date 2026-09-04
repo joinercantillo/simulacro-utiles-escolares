@@ -107,14 +107,14 @@ echo   Health:    http://localhost:3000/api/health
 echo.
 echo   PostgreSQL: localhost:5432 (Docker)
 echo.
-echo   Cargar seeders de prueba:
-echo     curl -X POST http://localhost:3000/api/seeders/default -H "Authorization: Bearer ^<TOKEN^>"
+echo   Load test seeders:
+echo     curl -X POST http://localhost:3000/api/seeder/default -H "Authorization: Bearer ^<TOKEN^>"
 echo.
-echo   Para detener PostgreSQL:
+echo   To stop PostgreSQL:
 echo     docker compose down
 echo.
 echo ==========================================
-echo   Iniciando npm run dev...
+echo   Starting npm run dev...
 echo ==========================================
 echo.
 

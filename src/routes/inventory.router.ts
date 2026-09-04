@@ -10,8 +10,8 @@ router.use(authenticateToken);
  * @swagger
  * /inventory/warehouse/{warehouseId}:
  *   get:
- *     summary: Obtener inventario de un almacén
- *     tags: [Inventario]
+ *     summary: Get the inventory of a warehouse
+ *     tags: [Inventory]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -19,7 +19,7 @@ router.use(authenticateToken);
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Lista de inventario }
+ *       200: { description: Inventory list }
  */
 router.get("/warehouse/:warehouseId", async (req: Request, res: Response) => {
   try {
@@ -29,7 +29,7 @@ router.get("/warehouse/:warehouseId", async (req: Request, res: Response) => {
     });
     res.json(inventory);
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener inventario", error });
+    res.status(500).json({ message: "Error getting inventory", error });
   }
 });
 
@@ -37,8 +37,8 @@ router.get("/warehouse/:warehouseId", async (req: Request, res: Response) => {
  * @swagger
  * /inventory:
  *   post:
- *     summary: Agregar stock de suministro (solo admin)
- *     tags: [Inventario]
+ *     summary: Add supply stock (admin only)
+ *     tags: [Inventory]
  *     security: [{ bearerAuth: [] }]
  *     requestBody:
  *       required: true
@@ -52,37 +52,37 @@ router.get("/warehouse/:warehouseId", async (req: Request, res: Response) => {
  *               schoolSupplyId: { type: integer, example: 1 }
  *               quantity: { type: integer, example: 100 }
  *     responses:
- *       201: { description: Inventario creado }
- *       400: { description: Datos inválidos }
- *       404: { description: Almacén o suministro no encontrado }
+ *       201: { description: Inventory created }
+ *       400: { description: Invalid data }
+ *       404: { description: Warehouse or supply not found }
  */
 router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) => {
   const result = createInventorySchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   try {
     const { warehouseId, schoolSupplyId, quantity } = result.data;
 
     const warehouse = await Warehouse.findOne({ where: { id: warehouseId, isActive: true } });
-    if (!warehouse) return res.status(404).json({ message: "Almacén no encontrado" });
+    if (!warehouse) return res.status(404).json({ message: "Warehouse not found" });
 
     const supply = await SchoolSupply.findOne({ where: { id: schoolSupplyId, isActive: true } });
-    if (!supply) return res.status(404).json({ message: "Suministro escolar no encontrado" });
+    if (!supply) return res.status(404).json({ message: "School supply not found" });
 
     const existing = await Inventory.findOne({ where: { warehouseId, schoolSupplyId } });
     if (existing) {
       existing.quantity += quantity;
       await existing.save();
-      return res.json({ message: "Inventario actualizado", inventory: existing });
+      return res.json({ message: "Inventory updated", inventory: existing });
     }
 
     const inventory = await Inventory.create({ warehouseId, schoolSupplyId, quantity });
-    res.status(201).json({ message: "Inventario creado", inventory });
+    res.status(201).json({ message: "Inventory created", inventory });
   } catch (error) {
-    res.status(500).json({ message: "Error al agregar inventario", error });
+    res.status(500).json({ message: "Error adding inventory", error });
   }
 });
 
@@ -90,8 +90,8 @@ router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) =>
  * @swagger
  * /inventory/{id}:
  *   put:
- *     summary: Actualizar cantidad de inventario (solo admin)
- *     tags: [Inventario]
+ *     summary: Update inventory quantity (admin only)
+ *     tags: [Inventory]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -99,25 +99,25 @@ router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) =>
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Inventario actualizado }
- *       400: { description: Datos inválidos }
- *       404: { description: Registro no encontrado }
+ *       200: { description: Inventory updated }
+ *       400: { description: Invalid data }
+ *       404: { description: Inventory record not found }
  */
 router.put("/:id", authorizeRoles("admin"), async (req: Request, res: Response) => {
   const result = updateInventorySchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   try {
     const inventory = await Inventory.findByPk(req.params.id);
-    if (!inventory) return res.status(404).json({ message: "Registro de inventario no encontrado" });
+    if (!inventory) return res.status(404).json({ message: "Inventory record not found" });
 
     await inventory.update(result.data);
-    res.json({ message: "Inventario actualizado", inventory });
+    res.json({ message: "Inventory updated", inventory });
   } catch (error) {
-    res.status(500).json({ message: "Error al actualizar inventario", error });
+    res.status(500).json({ message: "Error updating inventory", error });
   }
 });
 

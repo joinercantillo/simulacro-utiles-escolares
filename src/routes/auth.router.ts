@@ -10,14 +10,14 @@ const router = Router();
 /** @swagger
  * tags:
  *   name: Auth
- *   description: Autenticación y registro de usuarios
+ *   description: Authentication and user registration
  */
 
 /**
  * @swagger
  * /auth/register:
  *   post:
- *     summary: Registrar un nuevo usuario (admin o gestor)
+ *     summary: Register a new user (admin or gestor)
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -32,20 +32,20 @@ const router = Router();
  *               password: { type: string, example: "clave123" }
  *               role: { type: string, enum: [admin, gestor], example: "admin" }
  *     responses:
- *       201: { description: Usuario registrado }
- *       400: { description: Datos inválidos }
- *       409: { description: Email ya registrado }
+ *       201: { description: User registered }
+ *       400: { description: Invalid data }
+ *       409: { description: Email already registered }
  */
 router.post("/register", validateRegister, async (req: Request, res: Response) => {
   const result = registerUserSchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   try {
     const existingUser = await User.findOne({ where: { email: result.data.email } });
-    if (existingUser) return res.status(409).json({ message: "El email ya se encuentra registrado" });
+    if (existingUser) return res.status(409).json({ message: "This email is already registered" });
 
     const hashedPassword = await bcrypt.hash(result.data.password, 10);
     const user = await User.create({
@@ -55,11 +55,11 @@ router.post("/register", validateRegister, async (req: Request, res: Response) =
     });
 
     return res.status(201).json({
-      message: "Usuario registrado exitosamente",
+      message: "User registered successfully",
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
     });
   } catch (error) {
-    return res.status(500).json({ message: "Error al registrar usuario", error });
+    return res.status(500).json({ message: "Error registering user", error });
   }
 });
 
@@ -67,7 +67,7 @@ router.post("/register", validateRegister, async (req: Request, res: Response) =
  * @swagger
  * /auth/login:
  *   post:
- *     summary: Iniciar sesión
+ *     summary: Log in
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -80,22 +80,22 @@ router.post("/register", validateRegister, async (req: Request, res: Response) =
  *               email: { type: string, example: "ana@riwischool.co" }
  *               password: { type: string, example: "clave123" }
  *     responses:
- *       200: { description: Login exitoso, retorna token JWT }
- *       401: { description: Credenciales inválidas }
+ *       200: { description: Successful login, returns JWT token }
+ *       401: { description: Invalid credentials }
  */
 router.post("/login", validateLogin, async (req: Request, res: Response) => {
   const result = loginUserSchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   try {
     const user = await User.findOne({ where: { email: result.data.email } });
-    if (!user || !user.isActive) return res.status(401).json({ message: "Credenciales inválidas" });
+    if (!user || !user.isActive) return res.status(401).json({ message: "Invalid credentials" });
 
     const isValidPassword = await bcrypt.compare(result.data.password, user.password);
-    if (!isValidPassword) return res.status(401).json({ message: "Credenciales inválidas" });
+    if (!isValidPassword) return res.status(401).json({ message: "Invalid credentials" });
 
     const payload: JwtPayload = { id: user.id, email: user.email, role: user.role };
     const token = jwt.sign(payload, process.env.JWT_SECRET || "secret", {
@@ -103,12 +103,12 @@ router.post("/login", validateLogin, async (req: Request, res: Response) => {
     });
 
     return res.json({
-      message: "Inicio de sesión exitoso",
+      message: "Login successful",
       token,
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
     });
   } catch (error) {
-    return res.status(500).json({ message: "Error al iniciar sesión", error });
+    return res.status(500).json({ message: "Error logging in", error });
   }
 });
 

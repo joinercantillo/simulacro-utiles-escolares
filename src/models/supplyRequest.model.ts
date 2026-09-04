@@ -52,15 +52,15 @@ SupplyRequest.init(
 export default SupplyRequest;
 
 export const createSupplyRequestSchema = z.object({
-  schoolId: z.number().int().positive("El ID de la institución es requerido"),
-  schoolSupplyId: z.number().int().positive("El ID del suministro es requerido"),
-  warehouseId: z.number().int().positive("El ID del almacén es requerido"),
-  quantityRequested: z.number().int().positive("La cantidad debe ser mayor a cero"),
+  schoolId: z.number().int().positive("School ID is required"),
+  schoolSupplyId: z.number().int().positive("School supply ID is required"),
+  warehouseId: z.number().int().positive("Warehouse ID is required"),
+  quantityRequested: z.number().int().positive("Quantity must be greater than zero"),
   notes: z.string().max(500).optional(),
 });
 
 export const updateSupplyRequestStatusSchema = z.object({
   status: z.enum(["pendiente", "en_proceso", "aprobada", "rechazada", "completada"], {
-    message: "Estado no válido",
+    message: "Invalid status",
   }),
 });

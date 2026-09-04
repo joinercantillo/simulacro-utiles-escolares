@@ -7,12 +7,12 @@ export interface AuthRequest extends Request {
 }
 
 /**
- * Middleware que autentica el token JWT enviado en el header Authorization.
- * Verifica que el token sea válido y decodifica los datos del usuario en req.user.
- * @param req Request de Express con header Authorization tipo Bearer.
- * @param res Response de Express.
- * @param next Función que continúa al siguiente middleware si la autenticación es exitosa.
- * @returns No retorna valor; envía 401 si el token falta o es inválido.
+ * Middleware that authenticates the JWT token sent in the Authorization header.
+ * Verifies that the token is valid and decodes the user data into req.user.
+ * @param req Express Request with a Bearer-type Authorization header.
+ * @param res Express Response.
+ * @param next Function to continue to the next middleware if authentication succeeds.
+ * @returns No return value; sends 401 if the token is missing or invalid.
  */
 export function authenticateToken(
   req: AuthRequest,
@@ -23,7 +23,7 @@ export function authenticateToken(
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     res.status(401).json({
-      message: "Token de autenticación no proporcionado",
+      message: "Authentication token not provided",
     });
     return;
   }
@@ -39,28 +39,28 @@ export function authenticateToken(
     next();
   } catch {
     res.status(401).json({
-      message: "Token inválido o expirado",
+      message: "Invalid or expired token",
     });
   }
 }
 
 /**
- * Middleware que verifica que el usuario autenticado tenga uno de los roles permitidos.
- * @param roles Roles de usuario permitidos para la ruta.
- * @returns Middleware que valida el rol del usuario y llama a next() o envía 401/403.
+ * Middleware that verifies the authenticated user has one of the allowed roles.
+ * @param roles User roles allowed for the route.
+ * @returns Middleware that validates the user's role and calls next() or sends 401/403.
  */
 export function authorizeRoles(...roles: string[]) {
   return (req: AuthRequest, res: Response, next: NextFunction): void => {
     if (!req.user) {
       res.status(401).json({
-        message: "Usuario no autenticado",
+        message: "User not authenticated",
       });
       return;
     }
 
     if (!roles.includes(req.user.role)) {
       res.status(403).json({
-        message: "No tienes permisos para realizar esta acción",
+        message: "You do not have permission to perform this action",
       });
       return;
     }

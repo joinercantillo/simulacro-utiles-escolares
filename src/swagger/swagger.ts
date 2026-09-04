@@ -7,14 +7,14 @@ const options = {
       title: "RiwiSchool Plus API",
       version: "1.0.0",
       description:
-        "API REST para la gestión de solicitudes de abastecimiento de suministros escolares. " +
-        "Permite administrar instituciones, responsables, almacenes, inventario y el ciclo de vida " +
-        "de las solicitudes de abastecimiento.",
+        "REST API for managing school supply requests. " +
+        "It allows managing schools, responsible persons, warehouses, inventory and the complete " +
+        "lifecycle of supply requests.",
     },
     servers: [
       {
         url: "http://localhost:3000",
-        description: "Servidor local",
+        description: "Local server",
       },
     ],
     components: {

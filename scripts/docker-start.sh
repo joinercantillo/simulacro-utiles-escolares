@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ===========================================================
-# RiwiSchool Plus — Levantar PostgreSQL con Docker (Ubuntu)
-# Ejecutar con: chmod +x scripts/docker-start.sh && ./scripts/docker-start.sh
+# RiwiSchool Plus — Start PostgreSQL with Docker (Ubuntu)
+# Run with: chmod +x scripts/docker-start.sh && ./scripts/docker-start.sh
 # ===========================================================
 set -euo pipefail
 
@@ -17,62 +17,62 @@ err()  { echo -e "${RED}[✗]${NC} $*"; }
 cd "$(dirname "$0")/.."
 ROOT=$(pwd)
 
-# ── Verificar que Docker esté corriendo ────────────────────
+# ── Check that Docker is running ──────────────────────────
 if ! docker info &>/dev/null; then
-    warn "Docker no está corriendo. Iniciando Docker..."
-    sudo systemctl start docker || { err "No se pudo iniciar Docker. Ejecuta: sudo systemctl start docker"; exit 1; }
+    warn "Docker is not running. Starting Docker..."
+    sudo systemctl start docker || { err "Could not start Docker. Run: sudo systemctl start docker"; exit 1; }
 fi
 
-# ── Verificar docker-compose.yml ───────────────────────────
+# ── Check docker-compose.yml ─────────────────────────────
 if [ ! -f "docker-compose.yml" ]; then
-    err "No se encontró docker-compose.yml en $ROOT"
+    err "docker-compose.yml not found in $ROOT"
     exit 1
 fi
 
-# ── Copiar .env si no existe ────────────────────────────────
+# ── Copy .env if it does not exist ────────────────────────
 if [ ! -f ".env" ]; then
     if [ -f ".env.example" ]; then
         cp .env.example .env
-        log "Archivo .env creado desde .env.example"
+        log "File .env created from .env.example"
     else
-        warn "No se encontró .env.example — asegúrate de tener .env configurado"
+        warn ".env.example not found -- make sure you have .env configured"
     fi
 fi
 
-# ── Levantar SOLO PostgreSQL ────────────────────────────────
-log "Levantando PostgreSQL..."
+# ── Start PostgreSQL only ─────────────────────────────────
+log "Starting PostgreSQL..."
 docker compose up -d db
 
-# ── Esperar a que PostgreSQL esté listo ─────────────────────
-log "Esperando a que PostgreSQL esté disponible..."
+# ── Wait for PostgreSQL to be ready ───────────────────────
+log "Waiting for PostgreSQL to be available..."
 RETRIES=30
 until docker compose exec -T db pg_isready -U postgres -q 2>/dev/null; do
     RETRIES=$((RETRIES - 1))
     if [ "$RETRIES" -le 0 ]; then
-        err "PostgreSQL no respondió. Revisa los logs con: docker compose logs db"
+        err "PostgreSQL did not respond. Check the logs with: docker compose logs db"
         exit 1
     fi
     sleep 1
 done
-log "PostgreSQL listo."
+log "PostgreSQL ready."
 
-# ── Crear la base de datos si no existe ─────────────────────
+# ── Create the database if it does not exist ──────────────
 DB_NAME=$(grep DB_NAME .env | cut -d= -f2)
 DB_USER=$(grep DB_USER .env | cut -d= -f2)
 docker compose exec -T db psql -U "$DB_USER" -tc \
     "SELECT 1 FROM pg_database WHERE datname = '$DB_NAME'" | grep -q 1 \
     || docker compose exec -T db psql -U "$DB_USER" -c "CREATE DATABASE $DB_NAME"
-log "Base de datos '$DB_NAME' verificada."
+log "Database '$DB_NAME' verified."
 
-# ── Resumen ─────────────────────────────────────────────────
+# ── Summary ───────────────────────────────────────────────
 echo ""
-log "PostgreSQL levantado correctamente."
+log "PostgreSQL started successfully."
 echo ""
 echo "  PostgreSQL: localhost:5432 (Docker)"
 echo ""
-echo "  Para iniciar la API:"
+echo "  To start the API:"
 echo "    npm run dev"
 echo ""
-echo "  Para detener PostgreSQL:"
+echo "  To stop PostgreSQL:"
 echo "    docker compose down"
 echo ""

@@ -1,44 +1,44 @@
 [
   {
     "__type": "schoolSupply",
-    "name": "Cuaderno cuadriculado",
-    "description": "Cuaderno de 100 hojas tamaño carta",
-    "category": "Papelería",
-    "unit": "unidad"
+    "name": "Graph paper notebook",
+    "description": "100-sheet letter-size notebook",
+    "category": "Stationery",
+    "unit": "unit"
   },
   {
     "__type": "schoolSupply",
-    "name": "Lápiz grafito HB",
-    "description": "Lápiz de grafito estándar con borrador",
-    "category": "Papelería",
-    "unit": "caja"
+    "name": "HB graphite pencil",
+    "description": "Standard graphite pencil with eraser",
+    "category": "Stationery",
+    "unit": "box"
   },
   {
     "__type": "schoolSupply",
-    "name": "Resma de papel",
-    "description": "Resma de 500 hojas carta x75g",
-    "category": "Papelería",
-    "unit": "resma"
+    "name": "Paper ream",
+    "description": "500-sheet letter-size ream, 75g",
+    "category": "Stationery",
+    "unit": "ream"
   },
   {
     "__type": "schoolSupply",
-    "name": "Colores x12",
-    "description": "Caja de 12 colores escolares",
-    "category": "Artes",
-    "unit": "caja"
+    "name": "Colored pencils x12",
+    "description": "Box of 12 school colored pencils",
+    "category": "Arts",
+    "unit": "box"
   },
   {
     "__type": "schoolSupply",
-    "name": "Morral escolar",
-    "description": "Morral escolar con compartimientos",
-    "category": "Uniformes y accesorios",
-    "unit": "unidad"
+    "name": "School backpack",
+    "description": "School backpack with compartments",
+    "category": "Uniforms and accessories",
+    "unit": "unit"
   },
   {
     "__type": "schoolSupply",
-    "name": "Tijeras punta roma",
-    "description": "Tijeras escolares de seguridad",
-    "category": "Artes",
-    "unit": "unidad"
+    "name": "Blunt-tip scissors",
+    "description": "Safety school scissors",
+    "category": "Arts",
+    "unit": "unit"
   }
 ]

@@ -10,11 +10,11 @@ router.use(authenticateToken);
  * @swagger
  * /warehouse:
  *   get:
- *     summary: Obtener todos los almacenes
- *     tags: [Almacenes]
+ *     summary: Get all warehouses
+ *     tags: [Warehouses]
  *     security: [{ bearerAuth: [] }]
  *     responses:
- *       200: { description: Lista de almacenes }
+ *       200: { description: List of warehouses }
  */
 router.get("/", async (req: Request, res: Response) => {
   try {
@@ -24,7 +24,7 @@ router.get("/", async (req: Request, res: Response) => {
     });
     res.json(warehouses);
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener almacenes", error });
+    res.status(500).json({ message: "Error getting warehouses", error });
   }
 });
 
@@ -32,8 +32,8 @@ router.get("/", async (req: Request, res: Response) => {
  * @swagger
  * /warehouse/{id}:
  *   get:
- *     summary: Obtener almacén por ID con inventario
- *     tags: [Almacenes]
+ *     summary: Get warehouse by ID with its inventory
+ *     tags: [Warehouses]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -41,8 +41,8 @@ router.get("/", async (req: Request, res: Response) => {
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Almacén encontrado }
- *       404: { description: Almacén no encontrado }
+ *       200: { description: Warehouse found }
+ *       404: { description: Warehouse not found }
  */
 router.get("/:id", async (req: Request, res: Response) => {
   try {
@@ -50,10 +50,10 @@ router.get("/:id", async (req: Request, res: Response) => {
       where: { id: req.params.id, isActive: true },
       include: [{ model: Inventory, as: "inventories", include: [{ model: SchoolSupply, as: "schoolSupply" }] }],
     });
-    if (!warehouse) return res.status(404).json({ message: "Almacén no encontrado" });
+    if (!warehouse) return res.status(404).json({ message: "Warehouse not found" });
     res.json(warehouse);
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener el almacén", error });
+    res.status(500).json({ message: "Error getting the warehouse", error });
   }
 });
 
@@ -61,8 +61,8 @@ router.get("/:id", async (req: Request, res: Response) => {
  * @swagger
  * /warehouse:
  *   post:
- *     summary: Crear almacén (solo admin)
- *     tags: [Almacenes]
+ *     summary: Create warehouse (admin only)
+ *     tags: [Warehouses]
  *     security: [{ bearerAuth: [] }]
  *     requestBody:
  *       required: true
@@ -72,26 +72,26 @@ router.get("/:id", async (req: Request, res: Response) => {
  *             type: object
  *             required: [name, location, responsibleName, responsibleEmail]
  *             properties:
- *               name: { type: string, example: "Bodega Central" }
+ *               name: { type: string, example: "Central Warehouse" }
  *               location: { type: string, example: "Zona Industrial Norte" }
  *               responsibleName: { type: string, example: "Ana Torres" }
  *               responsibleEmail: { type: string, example: "ana@riwischool.co" }
  *     responses:
- *       201: { description: Almacén creado }
- *       400: { description: Datos inválidos }
+ *       201: { description: Warehouse created }
+ *       400: { description: Invalid data }
  */
 router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) => {
   const result = createWarehouseSchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   try {
     const warehouse = await Warehouse.create(result.data);
-    res.status(201).json({ message: "Almacén creado", warehouse });
+    res.status(201).json({ message: "Warehouse created", warehouse });
   } catch (error) {
-    res.status(500).json({ message: "Error al crear el almacén", error });
+    res.status(500).json({ message: "Error creating the warehouse", error });
   }
 });
 
@@ -99,8 +99,8 @@ router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) =>
  * @swagger
  * /warehouse/{id}:
  *   put:
- *     summary: Actualizar almacén (solo admin)
- *     tags: [Almacenes]
+ *     summary: Update warehouse (admin only)
+ *     tags: [Warehouses]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -108,29 +108,29 @@ router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) =>
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Almacén actualizado }
- *       400: { description: Datos inválidos }
- *       404: { description: Almacén no encontrado }
+ *       200: { description: Warehouse updated }
+ *       400: { description: Invalid data }
+ *       404: { description: Warehouse not found }
  */
 router.put("/:id", authorizeRoles("admin"), async (req: Request, res: Response) => {
   const result = updateWarehouseSchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   if (Object.keys(result.data).length === 0) {
-    return res.status(400).json({ message: "Debe proporcionar al menos un campo para actualizar" });
+    return res.status(400).json({ message: "You must provide at least one field to update" });
   }
 
   try {
     const warehouse = await Warehouse.findOne({ where: { id: req.params.id, isActive: true } });
-    if (!warehouse) return res.status(404).json({ message: "Almacén no encontrado" });
+    if (!warehouse) return res.status(404).json({ message: "Warehouse not found" });
 
     await warehouse.update(result.data);
-    res.json({ message: "Almacén actualizado", warehouse });
+    res.json({ message: "Warehouse updated", warehouse });
   } catch (error) {
-    res.status(500).json({ message: "Error al actualizar el almacén", error });
+    res.status(500).json({ message: "Error updating the warehouse", error });
   }
 });
 
@@ -138,8 +138,8 @@ router.put("/:id", authorizeRoles("admin"), async (req: Request, res: Response) 
  * @swagger
  * /warehouse/{id}:
  *   delete:
- *     summary: Eliminar almacén (baja lógica, solo admin)
- *     tags: [Almacenes]
+ *     summary: Delete warehouse (soft delete, admin only)
+ *     tags: [Warehouses]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -147,18 +147,18 @@ router.put("/:id", authorizeRoles("admin"), async (req: Request, res: Response) 
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Almacén eliminado }
- *       404: { description: Almacén no encontrado }
+ *       200: { description: Warehouse deleted }
+ *       404: { description: Warehouse not found }
  */
 router.delete("/:id", authorizeRoles("admin"), async (req: Request, res: Response) => {
   try {
     const warehouse = await Warehouse.findOne({ where: { id: req.params.id, isActive: true } });
-    if (!warehouse) return res.status(404).json({ message: "Almacén no encontrado" });
+    if (!warehouse) return res.status(404).json({ message: "Warehouse not found" });
 
     await warehouse.update({ isActive: false });
-    res.json({ message: "Almacén eliminado lógicamente" });
+    res.json({ message: "Warehouse soft deleted" });
   } catch (error) {
-    res.status(500).json({ message: "Error al eliminar el almacén", error });
+    res.status(500).json({ message: "Error deleting the warehouse", error });
   }
 });
 

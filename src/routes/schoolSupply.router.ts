@@ -9,18 +9,18 @@ router.use(authenticateToken);
  * @swagger
  * /school-supply:
  *   get:
- *     summary: Obtener todos los suministros escolares
- *     tags: [Suministros Escolares]
+ *     summary: Get all school supplies
+ *     tags: [School Supplies]
  *     security: [{ bearerAuth: [] }]
  *     responses:
- *       200: { description: Lista de suministros }
+ *       200: { description: List of supplies }
  */
 router.get("/", async (req: Request, res: Response) => {
   try {
     const items = await SchoolSupply.findAll({ where: { isActive: true } });
     res.json(items);
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener suministros escolares", error });
+    res.status(500).json({ message: "Error getting school supplies", error });
   }
 });
 
@@ -28,8 +28,8 @@ router.get("/", async (req: Request, res: Response) => {
  * @swagger
  * /school-supply/{id}:
  *   get:
- *     summary: Obtener suministro por ID
- *     tags: [Suministros Escolares]
+ *     summary: Get supply by ID
+ *     tags: [School Supplies]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -37,16 +37,16 @@ router.get("/", async (req: Request, res: Response) => {
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Suministro encontrado }
- *       404: { description: Suministro no encontrado }
+ *       200: { description: Supply found }
+ *       404: { description: Supply not found }
  */
 router.get("/:id", async (req: Request, res: Response) => {
   try {
     const item = await SchoolSupply.findOne({ where: { id: req.params.id, isActive: true } });
-    if (!item) return res.status(404).json({ message: "Suministro escolar no encontrado" });
+    if (!item) return res.status(404).json({ message: "School supply not found" });
     res.json(item);
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener el suministro escolar", error });
+    res.status(500).json({ message: "Error getting the school supply", error });
   }
 });
 
@@ -54,8 +54,8 @@ router.get("/:id", async (req: Request, res: Response) => {
  * @swagger
  * /school-supply:
  *   post:
- *     summary: Crear suministro escolar (solo admin)
- *     tags: [Suministros Escolares]
+ *     summary: Create school supply (admin only)
+ *     tags: [School Supplies]
  *     security: [{ bearerAuth: [] }]
  *     requestBody:
  *       required: true
@@ -65,34 +65,34 @@ router.get("/:id", async (req: Request, res: Response) => {
  *             type: object
  *             required: [name, category]
  *             properties:
- *               name: { type: string, example: "Cuaderno cuadriculado" }
- *               description: { type: string, example: "Cuaderno de 100 hojas" }
- *               category: { type: string, example: "Papelería" }
- *               unit: { type: string, example: "unidad" }
+ *               name: { type: string, example: "Graph paper notebook" }
+ *               description: { type: string, example: "100-sheet notebook" }
+ *               category: { type: string, example: "Stationery" }
+ *               unit: { type: string, example: "unit" }
  *     responses:
- *       201: { description: Suministro creado }
- *       400: { description: Datos inválidos }
- *       409: { description: Nombre duplicado }
+ *       201: { description: Supply created }
+ *       400: { description: Invalid data }
+ *       409: { description: Duplicate name }
  */
 router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) => {
   const result = createSchoolSupplySchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   try {
     const existing = await SchoolSupply.findOne({ where: { name: result.data.name } });
-    if (existing) return res.status(409).json({ message: "Ya existe un suministro escolar con el mismo nombre" });
+    if (existing) return res.status(409).json({ message: "A school supply with the same name already exists" });
 
     const item = await SchoolSupply.create({
       ...result.data,
       description: result.data.description || "",
       unit: result.data.unit || "unidad",
     });
-    res.status(201).json({ message: "Suministro escolar creado", item });
+    res.status(201).json({ message: "School supply created", item });
   } catch (error) {
-    res.status(500).json({ message: "Error al crear el suministro escolar", error });
+    res.status(500).json({ message: "Error creating the school supply", error });
   }
 });
 
@@ -100,8 +100,8 @@ router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) =>
  * @swagger
  * /school-supply/{id}:
  *   put:
- *     summary: Actualizar suministro escolar (solo admin)
- *     tags: [Suministros Escolares]
+ *     summary: Update school supply (admin only)
+ *     tags: [School Supplies]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -109,29 +109,29 @@ router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) =>
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Suministro actualizado }
- *       400: { description: Datos inválidos }
- *       404: { description: Suministro no encontrado }
+ *       200: { description: Supply updated }
+ *       400: { description: Invalid data }
+ *       404: { description: Supply not found }
  */
 router.put("/:id", authorizeRoles("admin"), async (req: Request, res: Response) => {
   const result = updateSchoolSupplySchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   if (Object.keys(result.data).length === 0) {
-    return res.status(400).json({ message: "Debe proporcionar al menos un campo para actualizar" });
+    return res.status(400).json({ message: "You must provide at least one field to update" });
   }
 
   try {
     const item = await SchoolSupply.findOne({ where: { id: req.params.id, isActive: true } });
-    if (!item) return res.status(404).json({ message: "Suministro escolar no encontrado" });
+    if (!item) return res.status(404).json({ message: "School supply not found" });
 
     await item.update(result.data);
-    res.json({ message: "Suministro escolar actualizado", item });
+    res.json({ message: "School supply updated", item });
   } catch (error) {
-    res.status(500).json({ message: "Error al actualizar el suministro escolar", error });
+    res.status(500).json({ message: "Error updating the school supply", error });
   }
 });
 
@@ -139,8 +139,8 @@ router.put("/:id", authorizeRoles("admin"), async (req: Request, res: Response) 
  * @swagger
  * /school-supply/{id}:
  *   delete:
- *     summary: Eliminar suministro escolar (baja lógica, solo admin)
- *     tags: [Suministros Escolares]
+ *     summary: Delete school supply (soft delete, admin only)
+ *     tags: [School Supplies]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -148,18 +148,18 @@ router.put("/:id", authorizeRoles("admin"), async (req: Request, res: Response) 
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Suministro eliminado }
- *       404: { description: Suministro no encontrado }
+ *       200: { description: Supply deleted }
+ *       404: { description: Supply not found }
  */
 router.delete("/:id", authorizeRoles("admin"), async (req: Request, res: Response) => {
   try {
     const item = await SchoolSupply.findOne({ where: { id: req.params.id, isActive: true } });
-    if (!item) return res.status(404).json({ message: "Suministro escolar no encontrado" });
+    if (!item) return res.status(404).json({ message: "School supply not found" });
 
     await item.update({ isActive: false });
-    res.json({ message: "Suministro escolar eliminado lógicamente" });
+    res.json({ message: "School supply soft deleted" });
   } catch (error) {
-    res.status(500).json({ message: "Error al eliminar el suministro escolar", error });
+    res.status(500).json({ message: "Error deleting the school supply", error });
   }
 });
 

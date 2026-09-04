@@ -12,18 +12,18 @@ router.use(authenticateToken);
  * @swagger
  * /school:
  *   get:
- *     summary: Obtener todas las instituciones
- *     tags: [Instituciones]
+ *     summary: Get all schools
+ *     tags: [Schools]
  *     security: [{ bearerAuth: [] }]
  *     responses:
- *       200: { description: Lista de instituciones }
+ *       200: { description: List of schools }
  */
 router.get("/", async (req: Request, res: Response) => {
   try {
     const schools = await School.findAll({ where: { isActive: true } });
     res.json(schools);
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener instituciones", error });
+    res.status(500).json({ message: "Error getting schools", error });
   }
 });
 
@@ -31,8 +31,8 @@ router.get("/", async (req: Request, res: Response) => {
  * @swagger
  * /school/{id}:
  *   get:
- *     summary: Obtener institución por ID con su historial de solicitudes
- *     tags: [Instituciones]
+ *     summary: Get school by ID with its request history
+ *     tags: [Schools]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -40,8 +40,8 @@ router.get("/", async (req: Request, res: Response) => {
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Institución encontrada }
- *       404: { description: Institución no encontrada }
+ *       200: { description: School found }
+ *       404: { description: School not found }
  */
 router.get("/:id", async (req: Request, res: Response) => {
   try {
@@ -56,10 +56,10 @@ router.get("/:id", async (req: Request, res: Response) => {
         ],
       }],
     });
-    if (!school) return res.status(404).json({ message: "Institución no encontrada" });
+    if (!school) return res.status(404).json({ message: "School not found" });
     res.json(school);
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener la institución", error });
+    res.status(500).json({ message: "Error getting the school", error });
   }
 });
 
@@ -67,8 +67,8 @@ router.get("/:id", async (req: Request, res: Response) => {
  * @swagger
  * /school:
  *   post:
- *     summary: Crear una institución (solo admin)
- *     tags: [Instituciones]
+ *     summary: Create a school (admin only)
+ *     tags: [Schools]
  *     security: [{ bearerAuth: [] }]
  *     requestBody:
  *       required: true
@@ -78,32 +78,32 @@ router.get("/:id", async (req: Request, res: Response) => {
  *             type: object
  *             required: [name, nit, address, phone, responsibleName, responsibleEmail]
  *             properties:
- *               name: { type: string, example: "Colegio La Esperanza" }
+ *               name: { type: string, example: "Hope School" }
  *               nit: { type: string, example: "900123456-1" }
  *               address: { type: string, example: "Calle 10 # 20-30" }
  *               phone: { type: string, example: "3001234567" }
  *               responsibleName: { type: string, example: "María López" }
  *               responsibleEmail: { type: string, example: "maria.lopez@esperanza.co" }
  *     responses:
- *       201: { description: Institución creada }
- *       400: { description: Datos inválidos }
- *       409: { description: NIT duplicado }
+ *       201: { description: School created }
+ *       400: { description: Invalid data }
+ *       409: { description: Duplicate NIT }
  */
 router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) => {
   const result = createSchoolSchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   try {
     const existing = await School.findOne({ where: { nit: result.data.nit } });
-    if (existing) return res.status(409).json({ message: "Ya existe una institución con el mismo NIT" });
+    if (existing) return res.status(409).json({ message: "A school with the same NIT already exists" });
 
     const school = await School.create(result.data);
-    res.status(201).json({ message: "Institución creada", school });
+    res.status(201).json({ message: "School created", school });
   } catch (error) {
-    res.status(500).json({ message: "Error al crear la institución", error });
+    res.status(500).json({ message: "Error creating the school", error });
   }
 });
 
@@ -111,8 +111,8 @@ router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) =>
  * @swagger
  * /school/{id}:
  *   put:
- *     summary: Actualizar una institución (solo admin)
- *     tags: [Instituciones]
+ *     summary: Update a school (admin only)
+ *     tags: [Schools]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -120,34 +120,34 @@ router.post("/", authorizeRoles("admin"), async (req: Request, res: Response) =>
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Institución actualizada }
- *       400: { description: Datos inválidos }
- *       404: { description: Institución no encontrada }
+ *       200: { description: School updated }
+ *       400: { description: Invalid data }
+ *       404: { description: School not found }
  */
 router.put("/:id", authorizeRoles("admin"), async (req: Request, res: Response) => {
   const result = updateSchoolSchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   if (Object.keys(result.data).length === 0) {
-    return res.status(400).json({ message: "Debe proporcionar al menos un campo para actualizar" });
+    return res.status(400).json({ message: "You must provide at least one field to update" });
   }
 
   try {
     const school = await School.findOne({ where: { id: req.params.id, isActive: true } });
-    if (!school) return res.status(404).json({ message: "Institución no encontrada" });
+    if (!school) return res.status(404).json({ message: "School not found" });
 
     if (result.data.nit) {
       const dup = await School.findOne({ where: { nit: result.data.nit, id: { [Op.ne]: req.params.id } } });
-      if (dup) return res.status(409).json({ message: "Ya existe una institución con el mismo NIT" });
+      if (dup) return res.status(409).json({ message: "A school with the same NIT already exists" });
     }
 
     await school.update(result.data);
-    res.json({ message: "Institución actualizada", school });
+    res.json({ message: "School updated", school });
   } catch (error) {
-    res.status(500).json({ message: "Error al actualizar la institución", error });
+    res.status(500).json({ message: "Error updating the school", error });
   }
 });
 
@@ -155,8 +155,8 @@ router.put("/:id", authorizeRoles("admin"), async (req: Request, res: Response) 
  * @swagger
  * /school/{id}:
  *   delete:
- *     summary: Eliminar institución (baja lógica, solo admin)
- *     tags: [Instituciones]
+ *     summary: Delete school (soft delete, admin only)
+ *     tags: [Schools]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -164,18 +164,18 @@ router.put("/:id", authorizeRoles("admin"), async (req: Request, res: Response) 
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Institución eliminada }
- *       404: { description: Institución no encontrada }
+ *       200: { description: School deleted }
+ *       404: { description: School not found }
  */
 router.delete("/:id", authorizeRoles("admin"), async (req: Request, res: Response) => {
   try {
     const school = await School.findOne({ where: { id: req.params.id, isActive: true } });
-    if (!school) return res.status(404).json({ message: "Institución no encontrada" });
+    if (!school) return res.status(404).json({ message: "School not found" });
 
     await school.update({ isActive: false });
-    res.json({ message: "Institución eliminada lógicamente" });
+    res.json({ message: "School soft deleted" });
   } catch (error) {
-    res.status(500).json({ message: "Error al eliminar la institución", error });
+    res.status(500).json({ message: "Error deleting the school", error });
   }
 });
 

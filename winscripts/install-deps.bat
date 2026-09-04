@@ -1,24 +1,24 @@
 @echo off
 :: ===========================================================
-:: RiwiSchool Plus - Instalacion de dependencias (Windows)
-:: Ejecutar: winscripts\install-deps.bat
+:: RiwiSchool Plus - Install dependencies (Windows)
+:: Run: winscripts\install-deps.bat
 :: ===========================================================
 setlocal enabledelayedexpansion
-title RiwiSchool Plus - Instalando dependencias...
+title RiwiSchool Plus - Installing dependencies...
 
 echo.
 echo ==========================================
-echo   Instalando dependencias del sistema...
+echo   Installing system dependencies...
 echo ==========================================
 echo.
 
-:: --- Verificar si winget esta disponible ---
+:: --- Check if winget is available ---
 where winget >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [!] winget no encontrado. Instalalo desde Microsoft Store:
+    echo [!] winget not found. Install it from Microsoft Store:
     echo     https://aka.ms/getwinget
     echo.
-    echo O instala manualmente:
+    echo Or install manually:
     echo   - Docker Desktop: https://docs.docker.com/desktop/install/windows-install/
     echo   - Node.js 18+:    https://nodejs.org/
     echo   - Git:            https://git-scm.com/download/win
@@ -28,10 +28,10 @@ if %errorlevel% neq 0 (
 :: --- Docker Desktop ---
 docker --version >nul 2>&1
 if %errorlevel% equ 0 (
-    echo [OK] Docker ya instalado: 
+    echo [OK] Docker already installed: 
     docker --version
 ) else (
-    echo [*] Instalando Docker Desktop...
+    echo [*] Installing Docker Desktop...
     winget install --id Docker.DockerDesktop --accept-package-agreements --accept-source-agreements
 )
 
@@ -39,44 +39,44 @@ if %errorlevel% equ 0 (
 node -v >nul 2>&1
 if %errorlevel% equ 0 (
     for /f "tokens=1 delims=v." %%a in ('node -v') do set "NODE_MAJOR=%%a"
-    echo [OK] Node.js ya instalado:
+    echo [OK] Node.js already installed:
     node -v
 ) else (
-    echo [*] Instalando Node.js 18...
+    echo [*] Installing Node.js 18...
     winget install --id OpenJS.NodeJS.LTS --accept-package-agreements --accept-source-agreements
 )
 
 :: --- Git ---
 git --version >nul 2>&1
 if %errorlevel% equ 0 (
-    echo [OK] Git ya instalado:
+    echo [OK] Git already installed:
     git --version
 ) else (
-    echo [*] Instalando Git...
+    echo [*] Installing Git...
     winget install --id Git.Git --accept-package-agreements --accept-source-agreements
 )
 
 :: --- npm ---
 npm -v >nul 2>&1
 if %errorlevel% equ 0 (
-    echo [OK] npm ya instalado:
+    echo [OK] npm already installed:
     npm -v
 ) else (
-    echo [!] npm no encontrado. Se instala con Node.js.
+    echo [!] npm not found. It is installed with Node.js.
 )
 
 echo.
 echo ==========================================
-echo   Resumen de herramientas instaladas:
+echo   Installed tools summary:
 echo ==========================================
 echo   Docker:  2>nul && docker --version
 echo   Node.js: 2>nul && node -v
 echo   npm:     2>nul && npm -v
 echo   Git:     2>nul && git --version
 echo.
-echo [OK] Dependencias instaladas correctamente.
+echo [OK] Dependencies installed successfully.
 echo.
-echo Siguiente paso: winscripts\docker-start.bat
+echo Next step: winscripts\docker-start.bat
 echo.
 
 pause

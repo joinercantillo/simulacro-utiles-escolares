@@ -1,81 +1,80 @@
-# RiwiSchool Plus API – Distribución de Útiles Escolares
+# RiwiSchool Plus API – School Supplies Distribution
 
-API REST para la gestión de solicitudes de abastecimiento de **útiles escolares**.
-El sistema permite que las **instituciones educativas (colegios)** soliciten útiles escolares
-(cuadernos, lápices, colores, resmas de papel, morrales) a las **bodegas** encargadas de su
-almacenamiento y despacho, administrando responsables, inventario, stock y el
-ciclo de vida completo de las solicitudes de abastecimiento.
+REST API for managing **school supplies** supply requests. The system allows **school institutions**
+to request school supplies (notebooks, pencils, colored pencils, paper reams, backpacks) from the
+**warehouses** in charge of storing and shipping them, managing responsible persons, inventory, stock
+and the complete lifecycle of the supply requests.
 
-## Nombre del Coder
+## Coder Name
 
 **Joiner Cantillo**
 
 ## Clan
 
-**Clan:** Node.js – Ruta de entrenamiento (actualiza con tu clan antes de entregar)
+**Clan:** Node.js – Training path (update with your clan before submitting)
 
-## Contexto del proyecto
+## Project Context
 
-> Un colegio necesita reabastecerse de útiles escolares para el inicio del año lectivo.
-> Su rectora inicia sesión en RiwiSchool Plus, consulta el catálogo de suministros escolares,
-> verifica la disponibilidad de stock en la bodega y crea una solicitud de útiles.
-> Un gestor de la bodega recibe la solicitud, la aprueba y coordina el despacho.
+> A school needs to restock its school supplies for the start of the school year.
+> Its principal logs in to RiwiSchool Plus, browses the school supplies catalog,
+> checks stock availability at the warehouse and creates a supplies request.
+> A warehouse manager receives the request, approves it and coordinates the shipment.
 
-## Tecnologías utilizadas
+## Technologies Used
 
-| Tecnología   | Versión | Uso                                             |
-| ------------ | ------- | ----------------------------------------------- |
-| Node.js      | 18+     | Entorno de ejecución                            |
-| TypeScript   | 5.x     | Lenguaje tipado                                 |
-| Express      | 4.x     | Framework HTTP para la API REST                 |
-| Sequelize    | 6.x     | ORM para PostgreSQL                             |
-| PostgreSQL   | 16.x    | Base de datos relacional                        |
-| JSON Web Token (JWT) | 9.x | Autenticación y protección de rutas             |
-| Multer       | 1.x     | Carga de archivos JSON como Seeders             |
-| Swagger      | 6.x     | Documentación de la API (Swagger UI)            |
-| Jest         | 29.x    | Pruebas unitarias                               |
-| Docker       | 3.x     | Contenerización (punto extra)                   |
+| Technology | Version | Usage |
+| --- | --- | --- |
+| Node.js | 18+ | Runtime environment |
+| TypeScript | 5.x | Typed language |
+| Express | 4.x | HTTP framework for the REST API |
+| Sequelize | 6.x | ORM for PostgreSQL |
+| PostgreSQL | 16.x | Relational database |
+| JSON Web Token (JWT) | 9.x | Authentication and route protection |
+| Multer | 1.x | JSON upload as Seeders |
+| Swagger | 6.x | API documentation (Swagger UI) |
+| Jest | 29.x | Unit tests |
+| Docker | 3.x | Containerization (extra point) |
 
-## Requisitos previos
+## Prerequisites
 
-- Node.js 18 o superior.
-- PostgreSQL 14 o superior corriendo localmente, o Docker.
+- Node.js 18 or higher.
+- PostgreSQL 14 or higher running locally, or Docker.
 - npm (Node Package Manager).
 
-## Instructivo de instalación
+## Installation Guide
 
-1. Clonar el repositorio:
+1. Clone the repository:
 
 ```bash
 git clone https://github.com/joinercantillo/simulacro-utiles-escolares.git
 cd simulacro-utiles-escolares
 ```
 
-2. Instalar las dependencias:
+2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-3. Crear el archivo de variables de entorno a partir del ejemplo:
+3. Create the environment variables file from the example:
 
 ```bash
 cp .env.example .env
 ```
 
-4. Crear la base de datos en PostgreSQL (si no existe):
+4. Create the database in PostgreSQL (if it does not exist):
 
 ```sql
 CREATE DATABASE riwischool_plus;
 ```
 
-5. (Opcional) Restaurar el backup incluido en la entrega:
+5. (Optional) Restore the backup included in the delivery:
 
 ```bash
 psql -U postgres -d riwischool_plus -f backup-database.sql
 ```
 
-## Ejemplo de variables de entorno (`.env`)
+## Environment variables example (`.env`)
 
 ```env
 PORT=3000
@@ -88,259 +87,277 @@ JWT_SECRET=riwischool_secret_key_2024
 JWT_EXPIRES_IN=24h
 ```
 
-## Ejecución del proyecto
+## Running the project
 
-### Modo desarrollo
+### Development mode
 
 ```bash
 npm run dev
 ```
 
-Este comando compila y ejecuta la aplicación con recarga automática. Al iniciar,
-las tablas se sincronizan automáticamente con Sequelize.
+This command compiles and runs the application with automatic reload. On startup,
+the tables are synchronized automatically with Sequelize.
 
-### Modo producción
+### Production mode
 
 ```bash
 npm run build
 npm start
 ```
 
-Al ejecutarse, el servidor quedará disponible en:
+Once running, the server will be available at:
 
 - API: `http://localhost:3000`
-- Documentación Swagger: `http://localhost:3000/api-docs`
+- Swagger documentation: `http://localhost:3000/api-docs`
 - Health check: `http://localhost:3000/api/health`
 
-## Carga de Seeders (datos de prueba)
+## Loading Seeders (test data)
 
-### Forma 1: Endpoint con Multer (archivo JSON)
+> **Important:** `npm run seed` runs `sequelize.sync({ force: true })`, which **drops and recreates
+> all tables**, deleting any existing data. Do **not** run it while the API is already live without
+> expecting loss of data. Prefer the `/api/seeder/default` endpoint (Form 3 below) to load the base
+> data without dropping tables.
 
-La API expone un endpoint que recibe un archivo JSON para poblar la base de datos
-como seeder. El archivo debe ser un arreglo de entidades identificadas con la
-propiedad `__type` (`user`, `school`, `warehouse`, `schoolSupply`, `inventory`, `request`).
+### Form 1: Endpoint with Multer (JSON file)
+
+The API exposes an endpoint that receives a JSON file to populate the database as a seeder.
+The file must be an array of entities identified with the `__type` property
+(`user`, `school`, `warehouse`, `schoolSupply`, `inventory`, `request`).
 
 ```bash
-curl -X POST http://localhost:3000/api/seeders/upload \
-  -H "Authorization: Bearer <TOKEN_ADMIN>" \
+curl -X POST http://localhost:3000/api/seeder/upload \
+  -H "Authorization: Bearer <ADMIN_TOKEN>" \
   -F "file=@seed-data/users.json"
 ```
 
-En la carpeta `seed-data/` encontrarás archivos de ejemplo con temática escolar
-(colegios, bodegas y útiles como cuadernos, lápices y colores):
+In the `seed-data/` folder you will find example files with the school theme
+(schools, warehouses and supplies such as notebooks, pencils and colored pencils):
 
 ```bash
-curl -X POST http://localhost:3000/api/seeders/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/schools.json"
-curl -X POST http://localhost:3000/api/seeders/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/warehouses.json"
-curl -X POST http://localhost:3000/api/seeders/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/school-supplies.json"
-curl -X POST http://localhost:3000/api/seeders/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/inventory.json"
+curl -X POST http://localhost:3000/api/seeder/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/schools.json"
+curl -X POST http://localhost:3000/api/seeder/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/warehouses.json"
+curl -X POST http://localhost:3000/api/seeder/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/school-supplies.json"
+curl -X POST http://localhost:3000/api/seeder/upload -H "Authorization: Bearer <TOKEN>" -F "file=@seed-data/inventory.json"
 ```
 
-### Forma 2: Script de consola (opcional)
+### Form 2: Console script (optional)
 
 ```bash
 npm run seed
 ```
 
-Este script sincroniza la base de datos y carga usuarios, instituciones educativas,
-bodegas, suministros escolares (útiles), inventario inicial y un par de solicitudes
-de ejemplo.
+> **Warning:** This script runs `sequelize.sync({ force: true })` — it **drops and recreates all
+> tables**, wiping existing data. Stop the running API (Ctrl+C) before running it locally.
 
-### Forma 3: Endpoint de datos por defecto
+If your API runs inside a Docker container (`riwischool-api`), run the seed inside the container:
 
 ```bash
-curl -X POST http://localhost:3000/api/seeders/default -H "Authorization: Bearer <TOKEN>"
+docker exec riwischool-api npx ts-node src/seeders/run-seeder.ts
 ```
 
-## Usuarios de prueba
+This script synchronizes the database and loads users, educational institutions, warehouses,
+school supplies, initial inventory and a couple of example requests.
 
-| Rol    | Email               | Contraseña |
-| ------ | ------------------- | ---------- |
-| admin  | admin@riwischool.co | admin123   |
-| gestor | gestor@riwischool.co | gestor123  |
+### Form 3: Default data endpoint (recommended)
 
-## Endpoints principales
+Loads the base data **without dropping tables**:
 
-| Método | Ruta                             | Descripción                              | Rol     |
-| ------ | -------------------------------- | ---------------------------------------- | ------- |
-| POST   | `/api/auth/register`             | Registrar usuario (admin/gestor)         | Público |
-| POST   | `/api/auth/login`                | Iniciar sesión (JWT)                     | Público |
-| GET    | `/api/schools`                   | Listar instituciones educativas          | Token   |
-| GET    | `/api/schools/:id`               | Institución con historial de solicitudes | Token   |
-| POST   | `/api/schools`                   | Crear institución educativa              | admin   |
-| PUT    | `/api/schools/:id`               | Actualizar institución educativa         | admin   |
-| DELETE | `/api/schools/:id`               | Eliminar institución (lógica)            | admin   |
-| GET    | `/api/warehouses`                | Listar bodegas                           | Token   |
-| GET    | `/api/warehouses/:id`            | Bodega con su inventario de útiles       | Token   |
-| POST   | `/api/warehouses`                | Crear bodega                             | admin   |
-| PUT    | `/api/warehouses/:id`            | Actualizar bodega                        | admin   |
-| DELETE | `/api/warehouses/:id`            | Eliminar bodega (lógica)                 | admin   |
-| GET    | `/api/school-supplies`           | Listar útiles escolares                  | Token   |
-| GET    | `/api/school-supplies/:id`       | Útil escolar por ID                      | Token   |
-| POST   | `/api/school-supplies`           | Crear útil escolar                       | admin   |
-| PUT    | `/api/school-supplies/:id`       | Actualizar útil escolar                  | admin   |
-| DELETE | `/api/school-supplies/:id`       | Eliminar útil escolar (lógica)           | admin   |
-| POST   | `/api/requests`                  | Crear solicitud de útiles escolares      | Token   |
-| GET    | `/api/requests/active`           | Solicitudes activas                      | Token   |
-| GET    | `/api/requests/all`              | Historial completo de solicitudes        | Token   |
-| GET    | `/api/requests/school/:id`       | Historial por institución                | Token   |
-| PATCH  | `/api/requests/:id/status`       | Actualizar estado de una solicitud       | Token   |
-| DELETE | `/api/requests/:id`              | Eliminar solicitud (lógica)              | admin   |
-| GET    | `/api/inventory/warehouse/:id`   | Inventario de una bodega                 | Token   |
-| POST   | `/api/inventory`                 | Agregar stock de útiles (admin)          | admin   |
-| PUT    | `/api/inventory/:id`             | Actualizar cantidad de inventario        | admin   |
-| POST   | `/api/seeders/upload`            | Cargar seeders desde archivo JSON        | Token   |
-| POST   | `/api/seeders/default`           | Cargar datos base por defecto            | Token   |
+```bash
+curl -X POST http://localhost:3000/api/seeder/default -H "Authorization: Bearer <TOKEN>"
+```
 
-## Estados de una solicitud
+This is the recommended way to load the base data when the API is already running.
 
-| Estado       | Descripción                            |
-| ------------ | -------------------------------------- |
-| pendiente    | Solicitud creada, en espera de revisión |
-| en_proceso   | Solicitud en gestión de la bodega       |
-| aprobada     | Solicitud aprobada                      |
-| rechazada    | Solicitud rechazada                     |
-| completada   | Solicitud surtida y finalizada          |
+## Test users
 
-## Validaciones implementadas
+| Role | Email | Password |
+| --- | --- | --- |
+| admin | admin@riwischool.co | admin123 |
+| gestor | gestor@riwischool.co | gestor123 |
 
-- Existencia de la institución educativa, el útil escolar y la bodega antes de crear una solicitud.
-- Disponibilidad suficiente del stock de útiles en la bodega asignada.
-- Cantidad solicitada debe ser un entero mayor a cero.
-- Estados de solicitud restringidos al catálogo definido.
-- No se permiten instituciones educativas duplicadas por NIT.
-- Eliminación lógica mediante el campo `isActive`.
+## Main endpoints
 
-## Pruebas unitarias
+> **Note:** After the architecture refactor, the resource paths use the singular form.
+
+| Method | Route | Description | Role |
+| --- | --- | --- | --- |
+| POST | `/api/auth/register` | Register a user (admin/gestor) | Public |
+| POST | `/api/auth/login` | Log in (JWT) | Public |
+| GET | `/api/school` | List school institutions | Token |
+| GET | `/api/school/:id` | School with its request history | Token |
+| POST | `/api/school` | Create a school | admin |
+| PUT | `/api/school/:id` | Update a school | admin |
+| DELETE | `/api/school/:id` | Delete a school (logical) | admin |
+| GET | `/api/warehouse` | List warehouses | Token |
+| GET | `/api/warehouse/:id` | Warehouse with its supplies inventory | Token |
+| POST | `/api/warehouse` | Create a warehouse | admin |
+| PUT | `/api/warehouse/:id` | Update a warehouse | admin |
+| DELETE | `/api/warehouse/:id` | Delete a warehouse (logical) | admin |
+| GET | `/api/school-supply` | List school supplies | Token |
+| GET | `/api/school-supply/:id` | School supply by ID | Token |
+| POST | `/api/school-supply` | Create a school supply | admin |
+| PUT | `/api/school-supply/:id` | Update a school supply | admin |
+| DELETE | `/api/school-supply/:id` | Delete a school supply (logical) | admin |
+| POST | `/api/request` | Create a school supplies request | Token |
+| GET | `/api/request/active` | Active requests | Token |
+| GET | `/api/request/all` | Full request history | Token |
+| GET | `/api/request/school/:id` | History by school | Token |
+| PATCH | `/api/request/:id/status` | Update a request status | Token |
+| DELETE | `/api/request/:id` | Delete a request (logical) | admin |
+| GET | `/api/inventory/warehouse/:id` | Inventory of a warehouse | Token |
+| POST | `/api/inventory` | Add supplies stock (admin) | admin |
+| PUT | `/api/inventory/:id` | Update inventory quantity | admin |
+| POST | `/api/seeder/upload` | Load seeders from a JSON file | Token |
+| POST | `/api/seeder/default` | Load default data | Token |
+
+## Request statuses
+
+| Status | Description |
+| --- | --- |
+| pending | Request created, awaiting review |
+| in_progress | Request being processed by the warehouse |
+| approved | Request approved |
+| rejected | Request rejected |
+| completed | Request fulfilled and finished |
+
+## Implemented validations
+
+- Existence of the school, the school supply and the warehouse before creating a request.
+- Sufficient school supplies stock available at the assigned warehouse.
+- Requested quantity must be an integer greater than zero.
+- Request statuses restricted to the defined catalog.
+- Duplicate schools by NIT are not allowed.
+- Logical deletion through the `isActive` field.
+
+## Unit tests
 
 ```bash
 npm test -- --coverage
 ```
 
-Cobertura obtenida en las funcionalidades críticas (creación de solicitudes,
-consulta de institución y responsable, cambio de estados y middlewares de autenticación):
-**100%** en las entidades evaluadas.
+Coverage obtained on the critical features (request creation, school and responsible person query,
+status changes and authentication middlewares): **100%** on the evaluated entities.
 
-## Docker (punto extra)
+## Docker (extra point)
 
-Docker se usa únicamente para ejecutar PostgreSQL. La API se ejecuta localmente
-con `npm run dev` para mayor comodidad en desarrollo y pruebas con Postman.
+Docker is used only to run PostgreSQL. The API runs locally with `npm run dev` for development
+convenience and testing with Postman.
 
-Levantar solo PostgreSQL:
+Start only PostgreSQL:
 
 ```bash
 docker compose up -d db
 ```
 
-Levantar todo (API + PostgreSQL) en Docker (opcional, para despliegue):
+Start everything (API + PostgreSQL) in Docker (optional, for deployment):
 
 ```bash
 docker compose up -d --build
 ```
 
-Esto levanta:
+This starts:
 
-- Contenedor `riwischool-db` (PostgreSQL en el puerto 5432).
-- Volumen `pgdata` para persistencia de datos.
-- Volumen `uploads` para persistir archivos subidos.
-- Red interna `riwischool-network` entre ambos servicios.
+- Container `riwischool-db` (PostgreSQL on port 5432).
+- Volume `pgdata` for data persistence.
+- Volume `uploads` to persist uploaded files.
+- Internal network `riwischool-network` between both services.
 
-Para detener PostgreSQL:
+To stop PostgreSQL:
 
 ```bash
 docker compose down
 ```
 
-## Scripts de automatización (Ubuntu)
+## Automation scripts (Ubuntu)
 
-En la carpeta `scripts/` se encuentran scripts `.sh` para instalar dependencias y levantar
-el proyecto automáticamente en Ubuntu.
+In the `scripts/` folder there are `.sh` scripts to install dependencies and start
+the project automatically on Ubuntu.
 
-### Script 1 — Instalar dependencias del sistema
+### Script 1 — Install system dependencies
 
-Instala Docker, Docker Compose, Node.js 18+ y Git en Ubuntu:
+Installs Docker, Docker Compose, Node.js 18+ and Git on Ubuntu:
 
 ```bash
 chmod +x scripts/install-deps.sh
 ./scripts/install-deps.sh
 ```
 
-> **Nota:** Al terminar, cierra y vuelve a abrir la terminal para que el grupo `docker`
-> surta efecto sin necesidad de `sudo`.
+> **Note:** When it finishes, close and reopen the terminal so the `docker`
+> group takes effect without needing `sudo`.
 
-### Script 2 — Levantar PostgreSQL con Docker
+### Script 2 — Start PostgreSQL with Docker
 
-Levantar solo la base de datos en Docker (para usar con `npm run dev`):
+Start only the database in Docker (to use with `npm run dev`):
 
 ```bash
 chmod +x scripts/docker-start.sh
 ./scripts/docker-start.sh
 ```
 
-### Script 3 — Setup completo (instalar + levantar + arrancar)
+### Script 3 — Full setup (install + start + run)
 
-Ejecuta todo de una sola vez: instala dependencias, levanta PostgreSQL en Docker,
-crea la base de datos, instala `node_modules` e inicia `npm run dev` automáticamente
-para que puedas probar con Postman:
+Runs everything at once: installs dependencies, starts PostgreSQL in Docker,
+creates the database, installs `node_modules` and starts `npm run dev` automatically
+so you can test with Postman:
 
 ```bash
 chmod +x scripts/setup.sh
 ./scripts/setup.sh
 ```
 
-### Resumen de scripts
+### Scripts summary
 
-| Script | Qué hace |
-| ------ | -------- |
-| `install-deps.sh` | Instala Docker, Docker Compose, Node.js 18+ y Git |
-| `docker-start.sh` | Levanta PostgreSQL en Docker y crea la BD |
-| `setup.sh` | Todo en uno: dependencias + PostgreSQL + npm run dev |
+| Script | What it does |
+| --- | --- |
+| `install-deps.sh` | Installs Docker, Docker Compose, Node.js 18+ and Git |
+| `docker-start.sh` | Starts PostgreSQL in Docker and creates the DB |
+| `setup.sh` | All in one: dependencies + PostgreSQL + npm run dev |
 
-## Scripts de automatización (Windows)
+## Automation scripts (Windows)
 
-En la carpeta `winscripts/` se encuentran scripts `.bat` para instalar dependencias y levantar
-el proyecto automáticamente en Windows 10/11.
+In the `winscripts/` folder there are `.bat` scripts to install dependencies and start
+the project automatically on Windows 10/11.
 
-### Script 1 — Instalar dependencias del sistema
+### Script 1 — Install system dependencies
 
-Instala Docker Desktop, Node.js 18+ y Git usando `winget`:
+Installs Docker Desktop, Node.js 18+ and Git using `winget`:
 
 ```cmd
 winscripts\install-deps.bat
 ```
 
-> **Nota:** Se necesita `winget` (incluido en Windows 10/11 actualizado). Si no lo tienes,
-> instálalo desde la Microsoft Store: https://aka.ms/getwinget
+> **Note:** `winget` is required (included in up-to-date Windows 10/11). If you don't have it,
+> install it from the Microsoft Store: https://aka.ms/getwinget
 
-### Script 2 — Levantar PostgreSQL con Docker
+### Script 2 — Start PostgreSQL with Docker
 
-Levantar solo la base de datos en Docker (para usar con `npm run dev`):
+Start only the database in Docker (to use with `npm run dev`):
 
 ```cmd
 winscripts\docker-start.bat
 ```
 
-### Script 3 — Setup completo (instalar + levantar + arrancar)
+### Script 3 — Full setup (install + start + run)
 
-Ejecuta todo de una sola vez: instala dependencias, levanta PostgreSQL en Docker,
-crea la base de datos, instala `node_modules` e inicia `npm run dev` automáticamente
-para que puedas probar con Postman:
+Runs everything at once: installs dependencies, starts PostgreSQL in Docker,
+creates the database, installs `node_modules` and starts `npm run dev` automatically
+so you can test with Postman:
 
 ```cmd
 winscripts\setup.bat
 ```
 
-### Resumen de scripts Windows
+### Windows scripts summary
 
-| Script | Qué hace |
-| ------ | -------- |
-| `install-deps.bat` | Instala Docker Desktop, Node.js 18+ y Git (winget) |
-| `docker-start.bat` | Levanta PostgreSQL en Docker y crea la BD |
-| `setup.bat` | Todo en uno: dependencias + PostgreSQL + npm run dev |
+| Script | What it does |
+| --- | --- |
+| `install-deps.bat` | Installs Docker Desktop, Node.js 18+ and Git (winget) |
+| `docker-start.bat` | Starts PostgreSQL in Docker and creates the DB |
+| `setup.bat` | All in one: dependencies + PostgreSQL + npm run dev |
 
-## Gitflow y estrategia de ramas
+## Gitflow and branching strategy
 
-El repositorio sigue la estrategia Gitflow con Conventional Commits:
+The repository follows the Gitflow strategy with Conventional Commits:
 
 ```text
 main
@@ -353,42 +370,41 @@ main
     └── feature/swagger-docs
 ```
 
-### Formato de commits
+### Commit format
 
 ```text
-feat: agregar registro y login de usuarios
-fix: validar inventario suficiente al crear solicitud
-docs: documentar endpoints con Swagger
-test: agregar pruebas unitarias de validación
-chore: configurar Docker y docker-compose
+feat: add user registration and login
+fix: validate sufficient inventory when creating a request
+docs: document endpoints with Swagger
+test: add unit tests for validation
+chore: configure Docker and docker-compose
 ```
 
-## URL del repositorio (GitHub)
+## Repository URL (GitHub)
 
 **https://github.com/joinercantillo/simulacro-utiles-escolares**
 
-## Estructura del proyecto
+## Project structure
 
 ```text
 src/
-├── app.ts                  # Punto de entrada
+├── app.ts                  # Entry point
 ├── config/
-│   └── database.ts         # Conexión a PostgreSQL (Sequelize)
-├── controllers/            # Lógica de negocio por recurso
-├── interfaces/             # Tipos e interfaces de TypeScript
-├── middlewares/            # Autenticación JWT, roles y validadores
-├── models/                 # Modelos de Sequelize y asociaciones
-├── routes/                 # Definición de rutas de la API
-├── seeders/                # Script opcional de seeders por consola
-├── swagger/                # Configuración de Swagger JSDoc
-seed-data/                  # Archivos JSON de ejemplo para seeders
-scripts/                    # Scripts de automatización (.sh) para Ubuntu
-winscripts/                 # Scripts de automatización (.bat) para Windows
-tests/                      # Pruebas unitarias con Jest
-Dockerfile                  # Imagen de la aplicación
-docker-compose.yml          # Orquestación API + PostgreSQL
+│   └── database.ts         # PostgreSQL connection (Sequelize)
+├── middlewares/            # JWT auth, roles and validators
+├── models/                 # Sequelize models, interfaces and Zod schemas (*.model.ts)
+├── routes/                 # API route definitions with inline logic (*.router.ts)
+├── seeders/                # Optional console seeders script
+├── swagger/                # Swagger JSDoc configuration
+├── types.ts                # Shared enums (UserRole, RequestStatus, JwtPayload)
+seed-data/                  # Example JSON files for seeders
+scripts/                    # Automation scripts (.sh) for Ubuntu
+winscripts/                 # Automation scripts (.bat) for Windows
+tests/                      # Unit tests with Jest
+Dockerfile                  # Application image
+docker-compose.yml          # Orchestration API + PostgreSQL
 ```
 
-## Licencia
+## License
 
-Proyecto académico para la ruta de formación Node.js – Riwi Coder House.
+Academic project for the Node.js training path – Riwi Coder House.

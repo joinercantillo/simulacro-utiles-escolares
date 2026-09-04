@@ -46,13 +46,13 @@ User.init(
 export default User;
 
 export const registerUserSchema = z.object({
-  name: z.string().min(1, "El nombre es requerido").max(100),
-  email: z.string().email("El email no es válido"),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  name: z.string().min(1, "Name is required").max(100),
+  email: z.string().email("Email is not valid"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
   role: z.enum(["admin", "gestor"]).optional(),
 });
 
 export const loginUserSchema = z.object({
-  email: z.string().email("El email no es válido"),
-  password: z.string().min(1, "La contraseña es requerida"),
+  email: z.string().email("Email is not valid"),
+  password: z.string().min(1, "Password is required"),
 });

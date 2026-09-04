@@ -1,7 +1,7 @@
 [
   {
     "__type": "school",
-    "name": "Colegio La Esperanza",
+    "name": "Hope School",
     "nit": "900123456-1",
     "address": "Calle 10 # 20-30",
     "phone": "3001234567",
@@ -10,7 +10,7 @@
   },
   {
     "__type": "school",
-    "name": "Institución Educativa San José",
+    "name": "San Jose Educational Institution",
     "nit": "900654321-8",
     "address": "Av. 68 # 45-12",
     "phone": "3119876543",
@@ -19,7 +19,7 @@
   },
   {
     "__type": "school",
-    "name": "Colegio Técnico del Norte",
+    "name": "North Technical School",
     "nit": "800555123-4",
     "address": "Cra 45 # 67-89",
     "phone": "3151112233",

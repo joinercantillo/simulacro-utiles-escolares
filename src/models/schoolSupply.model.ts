@@ -43,7 +43,7 @@ export default SchoolSupply;
 export const createSchoolSupplySchema = z.object({
   name: z.string().min(1, "El nombre es requerido").max(150),
   description: z.string().optional(),
-  category: z.string().min(1, "La categoría es requerida").max(100),
+  category: z.string().min(1, "Category is required").max(100),
   unit: z.string().min(1).max(50).optional(),
 });
 

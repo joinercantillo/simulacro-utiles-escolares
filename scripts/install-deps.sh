@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ===========================================================
-# RiwiSchool Plus — Instalación de dependencias (Ubuntu)
-# Ejecutar con: chmod +x scripts/install-deps.sh && ./scripts/install-deps.sh
+# RiwiSchool Plus — Install dependencies (Ubuntu)
+# Run with: chmod +x scripts/install-deps.sh && ./scripts/install-deps.sh
 # ===========================================================
 set -euo pipefail
 
@@ -12,16 +12,16 @@ NC='\033[0m'
 log()  { echo -e "${GREEN}[✓]${NC} $*"; }
 warn() { echo -e "${YELLOW}[!]${NC} $*"; }
 
-# ── Actualizar sistema ──────────────────────────────────────
-log "Actualizando paquetes del sistema..."
+# ── Update system ────────────────────────────────────────
+log "Updating system packages..."
 sudo apt-get update -qq
 sudo apt-get upgrade -y -qq
 
 # ── Docker ─────────────────────────────────────────────────
 if command -v docker &>/dev/null; then
-    log "Docker ya está instalado: $(docker --version)"
+    log "Docker already installed: $(docker --version)"
 else
-    log "Instalando Docker..."
+    log "Installing Docker..."
     sudo apt-get install -y -qq ca-certificates curl gnupg
     sudo install -m 0755 -d /etc/apt/keyrings
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -32,16 +32,16 @@ https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_C
     sudo apt-get update -qq
     sudo apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin
     sudo usermod -aG docker "$USER"
-    warn "Se añadió tu usuario al grupo 'docker'. Cierra y vuelve a abrir la terminal para usar docker sin sudo."
+    warn "Your user was added to the 'docker' group. Close and reopen the terminal to use docker without sudo."
 fi
 
-# ── Docker Compose (compatibilidad legacy) ─────────────────
+# ── Docker Compose (legacy compatibility) ────────────────
 if docker compose version &>/dev/null; then
-    log "Docker Compose plugin detectado: $(docker compose version --short)"
+    log "Docker Compose plugin detected: $(docker compose version --short)"
 elif command -v docker-compose &>/dev/null; then
-    log "docker-compose ya instalado: $(docker-compose --version)"
+    log "docker-compose already installed: $(docker-compose --version)"
 else
-    log "Instalando docker-compose standalone..."
+    log "Installing standalone docker-compose..."
     sudo apt-get install -y -qq docker-compose
 fi
 
@@ -49,34 +49,34 @@ fi
 if command -v node &>/dev/null; then
     NODE_VER=$(node -v | sed 's/v//' | cut -d. -f1)
     if [ "$NODE_VER" -ge 18 ]; then
-        log "Node.js ya instalado: $(node -v)"
+        log "Node.js already installed: $(node -v)"
     else
-        warn "Node.js $(node -v) detectado pero se necesita 18+. Actualizando..."
+        warn "Node.js $(node -v) detected but 18+ is required. Updating..."
         curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
         sudo apt-get install -y -qq nodejs
     fi
 else
-    log "Instalando Node.js 18..."
+    log "Installing Node.js 18..."
     curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
     sudo apt-get install -y -qq nodejs
 fi
 
 # ── Git ────────────────────────────────────────────────────
 if command -v git &>/dev/null; then
-    log "Git ya instalado: $(git --version)"
+    log "Git already installed: $(git --version)"
 else
-    log "Instalando Git..."
+    log "Installing Git..."
     sudo apt-get install -y -qq git
 fi
 
-# ── Verificación final ─────────────────────────────────────
+# ── Final verification ───────────────────────────────────
 echo ""
-log "Resumen de herramientas instaladas:"
-echo "  Docker:         $(docker --version 2>/dev/null || echo 'NO INSTALADO')"
-echo "  Docker Compose: $(docker compose version 2>/dev/null || docker-compose --version 2>/dev/null || echo 'NO INSTALADO')"
-echo "  Node.js:        $(node -v 2>/dev/null || echo 'NO INSTALADO')"
-echo "  npm:            $(npm -v 2>/dev/null || echo 'NO INSTALADO')"
-echo "  Git:            $(git --version 2>/dev/null || echo 'NO INSTALADO')"
+log "Installed tools summary:"
+echo "  Docker:         $(docker --version 2>/dev/null || echo 'NOT INSTALLED')"
+echo "  Docker Compose: $(docker compose version 2>/dev/null || docker-compose --version 2>/dev/null || echo 'NOT INSTALLED')"
+echo "  Node.js:        $(node -v 2>/dev/null || echo 'NOT INSTALLED')"
+echo "  npm:            $(npm -v 2>/dev/null || echo 'NOT INSTALLED')"
+echo "  Git:            $(git --version 2>/dev/null || echo 'NOT INSTALLED')"
 echo ""
-log "Dependencias del sistema instaladas correctamente."
-echo "  Siguiente paso: ./scripts/docker-start.sh"
+log "System dependencies installed successfully."
+echo "  Next step: ./scripts/docker-start.sh"

@@ -35,11 +35,11 @@ Inventory.init(
 export default Inventory;
 
 export const createInventorySchema = z.object({
-  warehouseId: z.number().int().positive("El ID del almacén es requerido"),
-  schoolSupplyId: z.number().int().positive("El ID del suministro es requerido"),
-  quantity: z.number().int().min(0, "La cantidad no puede ser negativa"),
+  warehouseId: z.number().int().positive("Warehouse ID is required"),
+  schoolSupplyId: z.number().int().positive("School supply ID is required"),
+  quantity: z.number().int().min(0, "Quantity cannot be negative"),
 });
 
 export const updateInventorySchema = z.object({
-  quantity: z.number().int().min(0, "La cantidad no puede ser negativa").optional(),
+  quantity: z.number().int().min(0, "Quantity cannot be negative").optional(),
 });

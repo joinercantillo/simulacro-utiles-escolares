@@ -18,7 +18,7 @@ const upload = multer({
     if (file.mimetype === "application/json" || file.originalname.endsWith(".json")) {
       cb(null, true);
     } else {
-      cb(new Error("Solo se permiten archivos JSON") as any);
+      cb(new Error("Only JSON files are allowed") as any);
     }
   },
 });
@@ -84,14 +84,14 @@ const router = Router();
 /** @swagger
  * tags:
  *   name: Seeders
- *   description: Carga de datos base mediante archivos JSON
+ *   description: Loading default data via JSON files
  */
 
 /**
  * @swagger
  * /seeder/upload:
  *   post:
- *     summary: Cargar datos base desde un archivo JSON
+ *     summary: Load default data from a JSON file
  *     tags: [Seeders]
  *     security: [{ bearerAuth: [] }]
  *     requestBody:
@@ -105,18 +105,18 @@ const router = Router();
  *                 type: string
  *                 format: binary
  *     responses:
- *       201: { description: Datos cargados }
- *       400: { description: Archivo inválido }
+ *       201: { description: Data loaded }
+ *       400: { description: Invalid file }
  */
 router.post("/upload", authenticateToken, upload.single("file"), async (req: Request, res: Response) => {
   try {
     const file = req.file;
-    if (!file) return res.status(400).json({ message: "Debes subir un archivo JSON" });
+    if (!file) return res.status(400).json({ message: "You must upload a JSON file" });
 
     const rawData = fs.readFileSync(file.path, "utf-8");
     const data = JSON.parse(rawData);
 
-    if (!Array.isArray(data)) return res.status(400).json({ message: "El archivo debe contener un arreglo de entidades" });
+    if (!Array.isArray(data)) return res.status(400).json({ message: "The file must contain an array of entities" });
 
     const summaries: Record<string, number> = {};
 
@@ -142,9 +142,9 @@ router.post("/upload", authenticateToken, upload.single("file"), async (req: Req
       }
     }
 
-    return res.status(201).json({ message: "Seeders cargados exitosamente", seeders: summaries });
+    return res.status(201).json({ message: "Seeders loaded successfully", seeders: summaries });
   } catch (error) {
-    return res.status(500).json({ message: "Error al cargar los seeders. Verifica que el JSON tenga el formato correcto", error });
+    return res.status(500).json({ message: "Error loading seeders. Verify the JSON has the correct format", error });
   }
 });
 
@@ -152,32 +152,32 @@ router.post("/upload", authenticateToken, upload.single("file"), async (req: Req
  * @swagger
  * /seeder/default:
  *   post:
- *     summary: Cargar datos base por defecto
+ *     summary: Load default data
  *     tags: [Seeders]
  *     security: [{ bearerAuth: [] }]
  *     responses:
- *       201: { description: Datos base cargados }
+ *       201: { description: Default data loaded }
  */
 router.post("/default", authenticateToken, async (_req: Request, res: Response) => {
   try {
     await seedUsers([
-      { name: "Administrador Principal", email: "admin@riwischool.co", password: "admin123", role: "admin" },
-      { name: "Gestora Principal", email: "gestor@riwischool.co", password: "gestor123", role: "gestor" },
+      { name: "Main Administrator", email: "admin@riwischool.co", password: "admin123", role: "admin" },
+      { name: "Main Manager", email: "gestor@riwischool.co", password: "gestor123", role: "gestor" },
     ]);
     await seedSchools([
-      { name: "Colegio La Esperanza", nit: "900123456-1", address: "Calle 10 # 20-30", phone: "3001234567", responsibleName: "María López", responsibleEmail: "maria.lopez@esperanza.co" },
-      { name: "Institución Educativa San José", nit: "900654321-8", address: "Av. 68 # 45-12", phone: "3119876543", responsibleName: "Carlos Pérez", responsibleEmail: "carlos.perez@sanjose.co" },
+      { name: "Hope School", nit: "900123456-1", address: "Calle 10 # 20-30", phone: "3001234567", responsibleName: "María López", responsibleEmail: "maria.lopez@esperanza.co" },
+      { name: "San Jose Educational Institution", nit: "900654321-8", address: "Av. 68 # 45-12", phone: "3119876543", responsibleName: "Carlos Pérez", responsibleEmail: "carlos.perez@sanjose.co" },
     ]);
     await seedWarehouses([
-      { name: "Bodega Central", location: "Zona Industrial Norte Bodega 1", responsibleName: "Ana Torres", responsibleEmail: "ana.torres@riwischool.co" },
-      { name: "Bodega Sur", location: "Carrera 30 # 12-85", responsibleName: "Jorge Ramírez", responsibleEmail: "jorge.ramirez@riwischool.co" },
+      { name: "Central Warehouse", location: "North Industrial Zone Warehouse 1", responsibleName: "Ana Torres", responsibleEmail: "ana.torres@riwischool.co" },
+      { name: "South Warehouse", location: "Carrera 30 # 12-85", responsibleName: "Jorge Ramírez", responsibleEmail: "jorge.ramirez@riwischool.co" },
     ]);
     await seedSchoolSupplies([
-      { name: "Cuaderno cuadriculado", description: "Cuaderno de 100 hojas tamaño carta", category: "Papelería", unit: "unidad" },
-      { name: "Lápiz grafito HB", description: "Lápiz de grafito estándar con borrador", category: "Papelería", unit: "caja" },
-      { name: "Resma de papel", description: "Resma de 500 hojas carta x75g", category: "Papelería", unit: "resma" },
-      { name: "Colores x12", description: "Caja de 12 colores escolares", category: "Artes", unit: "caja" },
-      { name: "Morral escolar", description: "Morral escolar con compartimientos", category: "Uniformes y accesorios", unit: "unidad" },
+      { name: "Graph paper notebook", description: "100-sheet letter-size notebook", category: "Stationery", unit: "unit" },
+      { name: "HB graphite pencil", description: "Standard graphite pencil with eraser", category: "Stationery", unit: "box" },
+      { name: "Paper ream", description: "500-sheet letter-size ream, 75g", category: "Stationery", unit: "ream" },
+      { name: "Colored pencils x12", description: "Box of 12 school colored pencils", category: "Arts", unit: "box" },
+      { name: "School backpack", description: "School backpack with compartments", category: "Uniforms and accessories", unit: "unit" },
     ]);
     await seedInventory([
       { warehouseId: 1, schoolSupplyId: 1, quantity: 100 },
@@ -188,9 +188,9 @@ router.post("/default", authenticateToken, async (_req: Request, res: Response) 
       { warehouseId: 2, schoolSupplyId: 1, quantity: 60 },
     ]);
 
-    return res.status(201).json({ message: "Datos base cargados exitosamente" });
+    return res.status(201).json({ message: "Default data loaded successfully" });
   } catch (error) {
-    return res.status(500).json({ message: "Error al cargar datos base", error });
+    return res.status(500).json({ message: "Error loading default data", error });
   }
 });
 

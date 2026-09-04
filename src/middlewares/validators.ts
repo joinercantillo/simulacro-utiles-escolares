@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 
 /**
- * Middleware que valida los campos de registro de un usuario.
- * Verifica que name, email, password y role sean obligatorios y tengan formatos válidos.
- * @param req Request de Express con body: { name, email, password, role }.
- * @param res Response de Express.
- * @param next Función que continúa al siguiente middleware si la validación es exitosa.
- * @returns No retorna valor; envía 400 si la validación falla.
+ * Middleware that validates the user registration fields.
+ * Verifies that name, email, password and role are required and have valid formats.
+ * @param req Express Request with body: { name, email, password, role }.
+ * @param res Express Response.
+ * @param next Function that continues to the next middleware if validation succeeds.
+ * @returns No return value; sends 400 if validation fails.
  */
 export function validateRegister(
   req: Request,
@@ -17,26 +17,26 @@ export function validateRegister(
 
   if (!name || !email || !password || !role) {
     res.status(400).json({
-      message: "Todos los campos son obligatorios: name, email, password, role",
+      message: "All fields are required: name, email, password, role",
     });
     return;
   }
 
   if (typeof name !== "string" || name.trim().length === 0) {
-    res.status(400).json({ message: "El nombre es obligatorio" });
+    res.status(400).json({ message: "Name is required" });
     return;
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
-    res.status(400).json({ message: "El email no tiene un formato válido" });
+    res.status(400).json({ message: "Email does not have a valid format" });
     return;
   }
 
   if (password.length < 6) {
     res
       .status(400)
-      .json({ message: "La contraseña debe tener al menos 6 caracteres" });
+      .json({ message: "Password must be at least 6 characters" });
     return;
   }
 
@@ -44,7 +44,7 @@ export function validateRegister(
   if (!validRoles.includes(role)) {
     res
       .status(400)
-      .json({ message: "El rol debe ser 'admin' o 'gestor'" });
+      .json({ message: "Role must be 'admin' or 'gestor'" });
     return;
   }
 
@@ -52,12 +52,12 @@ export function validateRegister(
 }
 
 /**
- * Middleware que valida los campos de inicio de sesión.
- * Verifica que el email y la contraseña estén presentes.
- * @param req Request de Express con body: { email, password }.
- * @param res Response de Express.
- * @param next Función que continúa al siguiente middleware si la validación es exitosa.
- * @returns No retorna valor; envía 400 si faltan campos.
+ * Middleware that validates the login fields.
+ * Verifies that the email and password are present.
+ * @param req Express Request with body: { email, password }.
+ * @param res Express Response.
+ * @param next Function that continues to the next middleware if validation succeeds.
+ * @returns No return value; sends 400 if fields are missing.
  */
 export function validateLogin(
   req: Request,
@@ -68,7 +68,7 @@ export function validateLogin(
 
   if (!email || !password) {
     res.status(400).json({
-      message: "El email y la contraseña son obligatorios",
+      message: "Email and password are required",
     });
     return;
   }

@@ -9,16 +9,16 @@ router.use(authenticateToken);
 
 /** @swagger
  * tags:
- *   name: Solicitudes
- *   description: Gestión de solicitudes de abastecimiento
+ *   name: Requests
+ *   description: Supply request management
  */
 
 /**
  * @swagger
  * /request:
  *   post:
- *     summary: Crear solicitud de abastecimiento
- *     tags: [Solicitudes]
+ *     summary: Create supply request
+ *     tags: [Requests]
  *     security: [{ bearerAuth: [] }]
  *     requestBody:
  *       required: true
@@ -34,32 +34,32 @@ router.use(authenticateToken);
  *               quantityRequested: { type: integer, example: 20 }
  *               notes: { type: string, example: "Entrega urgente" }
  *     responses:
- *       201: { description: Solicitud creada }
- *       400: { description: Validación fallida }
- *       404: { description: Institución, suministro escolar o almacén no encontrado }
+ *       201: { description: Request created }
+ *       400: { description: Validation failed }
+ *       404: { description: School, school supply or warehouse not found }
  */
 router.post("/", async (req: Request, res: Response) => {
   const result = createSupplyRequestSchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   try {
     const { schoolId, schoolSupplyId, warehouseId, quantityRequested, notes } = result.data;
 
     const school = await School.findOne({ where: { id: schoolId, isActive: true } });
-    if (!school) return res.status(404).json({ message: "Institución no encontrada" });
+    if (!school) return res.status(404).json({ message: "School not found" });
 
     const schoolSupply = await SchoolSupply.findOne({ where: { id: schoolSupplyId, isActive: true } });
-    if (!schoolSupply) return res.status(404).json({ message: "Suministro escolar no encontrado" });
+    if (!schoolSupply) return res.status(404).json({ message: "School supply not found" });
 
     const warehouse = await Warehouse.findOne({ where: { id: warehouseId, isActive: true } });
-    if (!warehouse) return res.status(404).json({ message: "Almacén no encontrado" });
+    if (!warehouse) return res.status(404).json({ message: "Warehouse not found" });
 
     const inventory = await Inventory.findOne({ where: { warehouseId, schoolSupplyId } });
     if (!inventory || inventory.quantity < quantityRequested) {
-      return res.status(400).json({ message: "El almacén no tiene inventario suficiente del suministro escolar solicitado" });
+      return res.status(400).json({ message: "The warehouse does not have enough inventory of the requested school supply" });
     }
 
     const supplyRequest = await SupplyRequest.create({
@@ -72,7 +72,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     return res.status(201).json(supplyRequest);
   } catch (error) {
-    return res.status(500).json({ message: "Error al crear la solicitud", error });
+    return res.status(500).json({ message: "Error creating the request", error });
   }
 });
 
@@ -80,11 +80,11 @@ router.post("/", async (req: Request, res: Response) => {
  * @swagger
  * /request/active:
  *   get:
- *     summary: Listar solicitudes activas
- *     tags: [Solicitudes]
+ *     summary: List active requests
+ *     tags: [Requests]
  *     security: [{ bearerAuth: [] }]
  *     responses:
- *       200: { description: Lista de solicitudes activas }
+ *       200: { description: List of active requests }
  */
 router.get("/active", async (req: Request, res: Response) => {
   try {
@@ -102,7 +102,7 @@ router.get("/active", async (req: Request, res: Response) => {
     });
     return res.json(requests);
   } catch (error) {
-    return res.status(500).json({ message: "Error al obtener las solicitudes activas", error });
+    return res.status(500).json({ message: "Error getting active requests", error });
   }
 });
 
@@ -110,11 +110,11 @@ router.get("/active", async (req: Request, res: Response) => {
  * @swagger
  * /request/all:
  *   get:
- *     summary: Historial completo de solicitudes
- *     tags: [Solicitudes]
+ *     summary: Full request history
+ *     tags: [Requests]
  *     security: [{ bearerAuth: [] }]
  *     responses:
- *       200: { description: Lista completa de solicitudes }
+ *       200: { description: Full list of requests }
  */
 router.get("/all", async (req: Request, res: Response) => {
   try {
@@ -129,7 +129,7 @@ router.get("/all", async (req: Request, res: Response) => {
     });
     return res.json(requests);
   } catch (error) {
-    return res.status(500).json({ message: "Error al obtener las solicitudes", error });
+    return res.status(500).json({ message: "Error getting the requests", error });
   }
 });
 
@@ -137,8 +137,8 @@ router.get("/all", async (req: Request, res: Response) => {
  * @swagger
  * /request/school/{schoolId}:
  *   get:
- *     summary: Historial de solicitudes por institución
- *     tags: [Solicitudes]
+ *     summary: Request history by school
+ *     tags: [Requests]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -146,14 +146,14 @@ router.get("/all", async (req: Request, res: Response) => {
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Historial de la institución }
- *       404: { description: Institución no encontrada }
+ *       200: { description: School history }
+ *       404: { description: School not found }
  */
 router.get("/school/:schoolId", async (req: Request, res: Response) => {
   try {
     const { schoolId } = req.params;
     const school = await School.findOne({ where: { id: schoolId, isActive: true } });
-    if (!school) return res.status(404).json({ message: "Institución no encontrada" });
+    if (!school) return res.status(404).json({ message: "School not found" });
 
     const requests = await SupplyRequest.findAll({
       where: { schoolId, isActive: true },
@@ -166,7 +166,7 @@ router.get("/school/:schoolId", async (req: Request, res: Response) => {
 
     return res.json({ school, requests });
   } catch (error) {
-    return res.status(500).json({ message: "Error al obtener el historial de la institución", error });
+    return res.status(500).json({ message: "Error getting the school history", error });
   }
 });
 
@@ -174,8 +174,8 @@ router.get("/school/:schoolId", async (req: Request, res: Response) => {
  * @swagger
  * /request/{id}/status:
  *   patch:
- *     summary: Actualizar estado de una solicitud
- *     tags: [Solicitudes]
+ *     summary: Update the status of a request
+ *     tags: [Requests]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -192,25 +192,25 @@ router.get("/school/:schoolId", async (req: Request, res: Response) => {
  *             properties:
  *               status: { type: string, enum: [pendiente, en_proceso, aprobada, rechazada, completada], example: "aprobada" }
  *     responses:
- *       200: { description: Solicitud actualizada }
- *       400: { description: Estado no permitido }
- *       404: { description: Solicitud no encontrada }
+ *       200: { description: Request updated }
+ *       400: { description: Status not allowed }
+ *       404: { description: Request not found }
  */
 router.patch("/:id/status", async (req: Request, res: Response) => {
   const result = updateSupplyRequestStatusSchema.safeParse(req.body);
   if (!result.success) {
     const errors = result.error.issues.map(i => ({ campo: i.path.join("."), mensaje: i.message }));
-    return res.status(400).json({ message: "Datos inválidos", errors });
+    return res.status(400).json({ message: "Invalid data", errors });
   }
 
   try {
     const supplyRequest = await SupplyRequest.findOne({ where: { id: req.params.id, isActive: true } });
-    if (!supplyRequest) return res.status(404).json({ message: "Solicitud no encontrada" });
+    if (!supplyRequest) return res.status(404).json({ message: "Request not found" });
 
     await supplyRequest.update({ status: result.data.status as any });
     return res.json(supplyRequest);
   } catch (error) {
-    return res.status(500).json({ message: "Error al actualizar la solicitud", error });
+    return res.status(500).json({ message: "Error updating the request", error });
   }
 });
 
@@ -218,8 +218,8 @@ router.patch("/:id/status", async (req: Request, res: Response) => {
  * @swagger
  * /request/{id}:
  *   delete:
- *     summary: Eliminar solicitud (baja lógica, solo admin)
- *     tags: [Solicitudes]
+ *     summary: Delete request (soft delete, admin only)
+ *     tags: [Requests]
  *     security: [{ bearerAuth: [] }]
  *     parameters:
  *       - in: path
@@ -227,18 +227,18 @@ router.patch("/:id/status", async (req: Request, res: Response) => {
  *         required: true
  *         schema: { type: integer }
  *     responses:
- *       200: { description: Solicitud eliminada }
- *       404: { description: Solicitud no encontrada }
+ *       200: { description: Request deleted }
+ *       404: { description: Request not found }
  */
 router.delete("/:id", authorizeRoles("admin"), async (req: Request, res: Response) => {
   try {
     const supplyRequest = await SupplyRequest.findOne({ where: { id: req.params.id, isActive: true } });
-    if (!supplyRequest) return res.status(404).json({ message: "Solicitud no encontrada" });
+    if (!supplyRequest) return res.status(404).json({ message: "Request not found" });
 
     await supplyRequest.update({ isActive: false });
-    return res.json({ message: "Solicitud eliminada lógicamente" });
+    return res.json({ message: "Request soft deleted" });
   } catch (error) {
-    return res.status(500).json({ message: "Error al eliminar la solicitud", error });
+    return res.status(500).json({ message: "Error deleting the request", error });
   }
 });
 

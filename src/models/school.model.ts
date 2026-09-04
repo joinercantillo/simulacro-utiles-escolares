@@ -3,7 +3,7 @@ import { z } from "zod";
 import sequelize from "../config/database";
 
 /**
- * Interfaz que representa una institución educativa del sistema.
+ * Interface representing a school institution in the system.
  */
 export interface ISchool {
   id: number;
@@ -19,12 +19,12 @@ export interface ISchool {
 }
 
 /**
- * Tipo para creación de institución (id es autoincremental).
+ * Type for school creation (id is auto-incremental).
  */
 export type SchoolCreationAttributes = Optional<ISchool, "id" | "isActive" | "createdAt" | "updatedAt">;
 
 /**
- * Modelo Sequelize que representa la tabla de instituciones del sistema.
+ * Sequelize model representing the schools table.
  */
 class School extends Model<ISchool, SchoolCreationAttributes> {
   public id!: number;
@@ -56,15 +56,15 @@ School.init(
 export default School;
 
 /**
- * Esquemas de validación Zod para instituciones.
+ * Zod validation schemas for schools.
  */
 export const createSchoolSchema = z.object({
-  name: z.string().min(1, "El nombre es requerido").max(150),
-  nit: z.string().min(1, "El NIT es requerido").max(30),
-  address: z.string().min(1, "La dirección es requerida").max(200),
-  phone: z.string().min(1, "El teléfono es requerido").max(20),
-  responsibleName: z.string().min(1, "El nombre del responsable es requerido").max(150),
-  responsibleEmail: z.string().email("El email del responsable no es válido"),
+  name: z.string().min(1, "Name is required").max(150),
+  nit: z.string().min(1, "NIT is required").max(30),
+  address: z.string().min(1, "Address is required").max(200),
+  phone: z.string().min(1, "Phone is required").max(20),
+  responsibleName: z.string().min(1, "Responsible name is required").max(150),
+  responsibleEmail: z.string().email("Responsible email is not valid"),
 });
 
 export const updateSchoolSchema = z.object({

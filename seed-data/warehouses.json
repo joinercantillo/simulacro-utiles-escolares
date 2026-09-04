@@ -1,14 +1,14 @@
 [
   {
     "__type": "warehouse",
-    "name": "Bodega Central",
-    "location": "Zona Industrial Norte Bodega 1",
+    "name": "Central Warehouse",
+    "location": "North Industrial Zone Warehouse 1",
     "responsibleName": "Ana Torres",
     "responsibleEmail": "ana.torres@riwischool.co"
   },
   {
     "__type": "warehouse",
-    "name": "Bodega Sur",
+    "name": "South Warehouse",
     "location": "Carrera 30 # 12-85",
     "responsibleName": "Jorge Ramírez",
     "responsibleEmail": "jorge.ramirez@riwischool.co"

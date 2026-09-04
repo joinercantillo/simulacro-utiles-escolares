@@ -25,7 +25,7 @@ app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/api/health", (_req: Request, res: Response) => {
-  res.json({ status: "ok", message: "API RiwiSchool Plus funcionando" });
+  res.json({ status: "ok", message: "RiwiSchool Plus API running" });
 });
 
 app.use("/api/auth", authRouter);
@@ -37,28 +37,28 @@ app.use("/api/inventory", inventoryRouter);
 app.use("/api/seeder", seederRouter);
 
 app.use((_req: Request, res: Response) => {
-  res.status(404).json({ message: "Ruta no encontrada" });
+  res.status(404).json({ message: "Route not found" });
 });
 
 /**
- * Inicializa el servidor Express, conecta la base de datos y comienza a escuchar en el puerto configurado.
- * @returns Promesa que se resuelve cuando el servidor está listo.
- * @throws Si no se puede conectar a la base de datos, termina el proceso.
+ * Initializes the Express server, connects to the database and starts listening on the configured port.
+ * @returns Promise that resolves when the server is ready.
+ * @throws If the database cannot be connected, terminates the process.
  */
 async function startServer(): Promise<void> {
   try {
     await sequelize.authenticate();
-    console.log("Conexión a PostgreSQL establecida correctamente");
+    console.log("PostgreSQL connection established successfully");
 
     await sequelize.sync({ alter: false });
 
     const PORT = Number(process.env.PORT) || 3000;
     app.listen(PORT, () => {
-      console.log(`Servidor corriendo en http://localhost:${PORT}`);
-      console.log(`Documentación Swagger en http://localhost:${PORT}/api-docs`);
+      console.log(`Server running at http://localhost:${PORT}`);
+      console.log(`Swagger documentation at http://localhost:${PORT}/api-docs`);
     });
   } catch (error) {
-    console.error("No se pudo conectar con la base de datos:", error);
+    console.error("Could not connect to the database:", error);
     process.exit(1);
   }
 }
@@ -68,7 +68,7 @@ if (require.main === module) {
 }
 
 /**
- * Aplicación Express principal del servidor.
- * @returns Instancia de la aplicación Express y la función startServer que la inicia.
+ * Main Express application of the server.
+ * @returns Express application instance and the startServer function that starts it.
  */
 export { app, startServer };

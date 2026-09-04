@@ -41,10 +41,10 @@ Warehouse.init(
 export default Warehouse;
 
 export const createWarehouseSchema = z.object({
-  name: z.string().min(1, "El nombre es requerido").max(150),
-  location: z.string().min(1, "La ubicación es requerida").max(200),
-  responsibleName: z.string().min(1, "El nombre del responsable es requerido").max(150),
-  responsibleEmail: z.string().email("El email del responsable no es válido"),
+  name: z.string().min(1, "Name is required").max(150),
+  location: z.string().min(1, "Location is required").max(200),
+  responsibleName: z.string().min(1, "Responsible name is required").max(150),
+  responsibleEmail: z.string().email("Responsible email is not valid"),
 });
 
 export const updateWarehouseSchema = z.object({
